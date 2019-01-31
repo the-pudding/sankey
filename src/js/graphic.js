@@ -55,7 +55,7 @@ function toTreeData({ data, correct, index = 0 }) {
 	return nested.length ? nested : null;
 }
 
-function resize(maxChars) {
+function resize(maxChars = 0) {
 	const margin = { top: 30, right: 30, bottom: 30, left: 30 };
 	const widthPerChar = 48;
 	const w = widthPerChar * maxChars;
@@ -72,8 +72,9 @@ function resize(maxChars) {
 		.attr('transform', `translate(${margin.left}, ${margin.top})`);
 }
 
-function updateChart({ treeData, spellings }) {
+function updateChart({ treeData, spellings, user }) {
 	const maxChars = d3.max(spellings, d => d.name.length);
+	const userDepth = user.length;
 
 	resize(maxChars);
 
@@ -87,7 +88,6 @@ function updateChart({ treeData, spellings }) {
 
 	// maps the node data to the tree layout
 	const nodes = treemap(root);
-	// console.log(nodes.descendants().slice(1));
 
 	const maxWidth = d3.max(nodes.descendants(), d => d.value);
 	const scaleWidth = d3
@@ -107,7 +107,8 @@ function updateChart({ treeData, spellings }) {
 			const x = d.x;
 			return `M${d.y},${x}C${(d.y + d.parent.y) / 2},${x} ${(d.y + d.parent.y) /
 				2}, ${d.parent.x} ${d.parent.y},${d.parent.x}`;
-		});
+		})
+		.classed('is-hidden', d => d.depth >= userDepth);
 
 	// adds each node as a group
 
@@ -129,7 +130,8 @@ function updateChart({ treeData, spellings }) {
 		.data(nodes.descendants(), d => d.data.id)
 		.join(enterNode)
 		.attr('transform', d => `translate(${d.y}, ${d.x})`)
-		.classed('is-correct', d => d.data.correct);
+		.classed('is-correct', d => d.data.correct)
+		.classed('is-hidden', d => d.depth >= userDepth);
 
 	$node.selectAll('text').text(d => d.data.key);
 }
@@ -142,18 +144,18 @@ function handleInputChange() {
 		if (match) match.count += 1;
 		else clone.push({ name, count: 1 });
 		const [treeData] = toTreeData({ data: clone, correct: 'gyllenhaal' });
-		updateChart({ treeData, spellings: clone });
+		updateChart({ treeData, spellings: clone, user: name });
 	} else {
 		this.value = 'g';
 		const [treeData] = toTreeData({ data: raw, correct: 'gyllenhaal' });
-		updateChart({ treeData, spellings: raw });
+		updateChart({ treeData, spellings: raw, user: name });
 	}
 }
 
 function init() {
 	resize();
 	const [treeData] = toTreeData({ data: raw, correct: 'gyllenhaal' });
-	updateChart({ treeData, spellings: raw });
+	updateChart({ treeData, spellings: raw, user: 'Gyllenhaal' });
 	$input.on('keyup', handleInputChange);
 }
 
