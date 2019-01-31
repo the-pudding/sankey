@@ -1,0 +1,42 @@
+/* CUSTOM STORY STYLE */
+
+#graphic
+	padding-bottom 5rem
+
+.graphic__result
+	max-width $column-width
+	margin 0 auto
+	svg
+		margin 0 auto
+		display block
+	.node
+		&.is-correct
+			text
+				fill red
+		text
+			font-family monospace
+			font-size 24px
+			font-weight bold
+			text-transform uppercase
+		.text--bg
+			fill none
+			stroke-width 3px
+			stroke $bg
+
+	.link
+		fill none
+		stroke gray
+		stroke-opacity 0.5
+
+.graphic__question
+	input
+		font-family $mono
+		font-size 32px
+		line-height 32px
+		padding 8px
+		letter-spacing 8px
+		text-transform uppercase
+		width 30rem
+		display block
+		margin 0 auto
+		font-weight bold
