@@ -10,11 +10,17 @@
 		margin 0 auto
 		display block
 	.node
+		opacity 0
 		&.is-hidden
-			// opacity 0
+			opacity 0
 		&.is-correct
 			text
-				fill red
+				// fill green
+		&.is-user
+			opacity 1
+			text
+				fill magenta
+				
 		text
 			font-family monospace
 			font-size 24px
@@ -30,7 +36,11 @@
 		stroke lightgray
 		stroke-opacity 1
 		&.is-hidden
-			// opacity 0
+			opacity 0
+		&.is-correct
+			// stroke lightgreen
+		&.is-user
+			stroke violet
 
 .graphic__question
 	input

@@ -3,6 +3,8 @@ const $result = $graphic.select('.graphic__result');
 const $figure = $result.select('figure');
 const $svg = $figure.select('svg');
 const $g = $svg.select('g');
+const $nodes = $g.select('.g-nodes');
+const $links = $g.select('.g-links');
 const $input = $graphic.select('input');
 
 let width = 0;
@@ -26,7 +28,7 @@ const raw = [
 ];
 
 // recursion!
-function toTreeData({ data, correct, index = 0 }) {
+function toTreeData({ data, user, correct, index = 0 }) {
 	// goal: values = {key, count, data}
 
 	// get character at new index
@@ -48,8 +50,9 @@ function toTreeData({ data, correct, index = 0 }) {
 			id: `${index}-${d.key}`,
 			index,
 			correct: d.values.map(v => v.name).includes(correct),
+			user: d.values.map(v => v.name).includes(user),
 			value: d3.sum(d.values, v => v.count),
-			values: toTreeData({ data: d.values, correct, index: index + 1 })
+			values: toTreeData({ data: d.values, user, correct, index: index + 1 })
 		}));
 
 	return nested.length ? nested : null;
@@ -63,13 +66,10 @@ function resize(maxChars = 0) {
 	width = w - margin.left - margin.right;
 	height = h - margin.top - margin.bottom;
 
-	$result
-		.selectAll('svg')
+	$svg
 		.attr('width', width + margin.left + margin.right)
 		.attr('height', height + margin.top + margin.bottom);
-	$result
-		.selectAll('g')
-		.attr('transform', `translate(${margin.left}, ${margin.top})`);
+	$g.attr('transform', `translate(${margin.left}, ${margin.top})`);
 }
 
 function updateChart({ treeData, spellings, user }) {
@@ -96,19 +96,22 @@ function updateChart({ treeData, spellings, user }) {
 		.range([2, 30]);
 
 	// adds the links between the nodes
-	const $link = $g
+	const $link = $links
 		.selectAll('.link')
 		.data(nodes.descendants().slice(1), d => d.data.id)
 		.join('path')
 		.attr('class', 'link')
-		.attr('stroke-width', d => scaleWidth(d.value))
+		// .attr('stroke-width', d => scaleWidth(d.value))
+		.attr('stroke-width', d => 4)
 		// .attr('stroke-opacity', d => scaleOpacity(d.data.count))
 		.attr('d', d => {
 			const x = d.x;
 			return `M${d.y},${x}C${(d.y + d.parent.y) / 2},${x} ${(d.y + d.parent.y) /
 				2}, ${d.parent.x} ${d.parent.y},${d.parent.x}`;
 		})
-		.classed('is-hidden', d => d.depth >= userDepth);
+		.classed('is-hidden', d => d.depth >= userDepth)
+		.classed('is-correct', d => d.data.correct)
+		.classed('is-user', d => d.data.user);
 
 	// adds each node as a group
 
@@ -125,12 +128,13 @@ function updateChart({ treeData, spellings, user }) {
 		return $n;
 	};
 
-	const $node = $g
+	const $node = $nodes
 		.selectAll('.node')
 		.data(nodes.descendants(), d => d.data.id)
 		.join(enterNode)
 		.attr('transform', d => `translate(${d.y}, ${d.x})`)
 		.classed('is-correct', d => d.data.correct)
+		.classed('is-user', d => d.data.user)
 		.classed('is-hidden', d => d.depth >= userDepth);
 
 	$node.selectAll('text').text(d => d.data.key);
@@ -143,11 +147,19 @@ function handleInputChange() {
 		const match = clone.find(d => d.name === name);
 		if (match) match.count += 1;
 		else clone.push({ name, count: 1 });
-		const [treeData] = toTreeData({ data: clone, correct: 'gyllenhaal' });
+		const [treeData] = toTreeData({
+			data: clone,
+			user: name,
+			correct: 'gyllenhaal'
+		});
 		updateChart({ treeData, spellings: clone, user: name });
 	} else {
 		this.value = 'g';
-		const [treeData] = toTreeData({ data: raw, correct: 'gyllenhaal' });
+		const [treeData] = toTreeData({
+			data: raw,
+			user: name,
+			correct: 'gyllenhaal'
+		});
 		updateChart({ treeData, spellings: raw, user: name });
 	}
 }
