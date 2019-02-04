@@ -1,3 +1,6 @@
+import db from './db';
+import generateTreeData from './generate-tree-data';
+
 const $graphic = d3.select('#graphic');
 const $result = $graphic.select('.graphic__result');
 const $figure = $result.select('figure');
@@ -27,37 +30,6 @@ const raw = [
 	{ name: 'gyllenhaal', count: 29 }
 ];
 
-// recursion!
-function toTreeData({ data, user, correct, index = 0 }) {
-	// goal: values = {key, count, data}
-
-	// get character at new index
-	// const chars = data.map(d => d.name.charAt(index));
-	// find all unique possible characters
-	// const unique = [...new Set(chars)];
-
-	// console.log({ index, unique });
-	// if there are some, sankeyData those (filter)
-
-	const withChar = data.map(d => ({ ...d, char: d.name.charAt(index) }));
-	const nested = d3
-		.nest()
-		.key(d => d.char)
-		.entries(withChar)
-		.filter(d => d.key)
-		.map(d => ({
-			...d,
-			id: `${index}-${d.key}`,
-			index,
-			correct: d.values.map(v => v.name).includes(correct),
-			user: d.values.map(v => v.name).includes(user),
-			value: d3.sum(d.values, v => v.count),
-			values: toTreeData({ data: d.values, user, correct, index: index + 1 })
-		}));
-
-	return nested.length ? nested : null;
-}
-
 function resize(maxChars = 0) {
 	const margin = { top: 30, right: 30, bottom: 30, left: 30 };
 	const widthPerChar = 48;
@@ -72,9 +44,9 @@ function resize(maxChars = 0) {
 	$g.attr('transform', `translate(${margin.left}, ${margin.top})`);
 }
 
-function updateChart({ treeData, spellings, user }) {
-	const maxChars = d3.max(spellings, d => d.name.length);
-	const userDepth = user.length;
+function updateChart({ treeData, versions, guess }) {
+	const maxChars = d3.max(versions, d => d.name.length);
+	const guessDepth = guess.length;
 
 	resize(maxChars);
 
@@ -109,9 +81,9 @@ function updateChart({ treeData, spellings, user }) {
 			return `M${d.y},${x}C${(d.y + d.parent.y) / 2},${x} ${(d.y + d.parent.y) /
 				2}, ${d.parent.x} ${d.parent.y},${d.parent.x}`;
 		})
-		.classed('is-hidden', d => d.depth >= userDepth)
+		.classed('is-hidden', d => d.depth >= guessDepth)
 		.classed('is-correct', d => d.data.correct)
-		.classed('is-user', d => d.data.user);
+		.classed('is-guess', d => d.data.guess);
 
 	// adds each node as a group
 
@@ -134,40 +106,48 @@ function updateChart({ treeData, spellings, user }) {
 		.join(enterNode)
 		.attr('transform', d => `translate(${d.y}, ${d.x})`)
 		.classed('is-correct', d => d.data.correct)
-		.classed('is-user', d => d.data.user)
-		.classed('is-hidden', d => d.depth >= userDepth);
+		.classed('is-guess', d => d.data.guess)
+		.classed('is-hidden', d => d.depth >= guessDepth);
 
 	$node.selectAll('text').text(d => d.data.key);
 }
 
 function handleInputChange() {
-	const name = this.value.toLowerCase();
-	if (name.length) {
+	const val = this.value.toLowerCase();
+	const guess = val.length && val.charAt(0) === 'g' ? val : 'g';
+	this.value = guess;
+
+	if (guess.length) {
 		const clone = raw.map(d => ({ ...d }));
-		const match = clone.find(d => d.name === name);
+		const match = clone.find(d => d.name === guess);
 		if (match) match.count += 1;
-		else clone.push({ name, count: 1 });
-		const [treeData] = toTreeData({
+		else clone.push({ name: guess, count: 1 });
+		const [treeData] = generateTreeData({
 			data: clone,
-			user: name,
+			guess,
 			correct: 'gyllenhaal'
 		});
-		updateChart({ treeData, spellings: clone, user: name });
+		updateChart({ treeData, versions: clone, guess });
 	} else {
 		this.value = 'g';
-		const [treeData] = toTreeData({
+		const [treeData] = generateTreeData({
 			data: raw,
-			user: name,
+			guess,
 			correct: 'gyllenhaal'
 		});
-		updateChart({ treeData, spellings: raw, user: name });
+		updateChart({ treeData, versions: raw, guess });
 	}
 }
 
 function init() {
+	d3.json('https://pudding.cool/2019/02/sankey-data/data.json')
+		.then(console.log)
+		.catch(console.error);
+	// db.setup();
+	// console.log(db.getGuess());
 	resize();
-	const [treeData] = toTreeData({ data: raw, correct: 'gyllenhaal' });
-	updateChart({ treeData, spellings: raw, user: 'Gyllenhaal' });
+	const [treeData] = generateTreeData({ data: raw, correct: 'gyllenhaal' });
+	updateChart({ treeData, versions: raw, guess: 'Gyllenhaal' });
 	$input.on('keyup', handleInputChange);
 }
 

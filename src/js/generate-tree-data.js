@@ -1,0 +1,34 @@
+export default function generateTreeData({ data, guess, correct, index = 0 }) {
+	// goal: values = {key, count, data}
+
+	// get character at new index
+	// const chars = data.map(d => d.name.charAt(index));
+	// find all unique possible characters
+	// const unique = [...new Set(chars)];
+
+	// console.log({ index, unique });
+	// if there are some, sankeyData those (filter)
+
+	const withChar = data.map(d => ({ ...d, char: d.name.charAt(index) }));
+	const nested = d3
+		.nest()
+		.key(d => d.char)
+		.entries(withChar)
+		.filter(d => d.key)
+		.map(d => ({
+			...d,
+			id: `${index}-${d.key}`,
+			index,
+			correct: d.values.map(v => v.name).includes(correct),
+			guess: d.values.map(v => v.name).includes(guess),
+			value: d3.sum(d.values, v => v.count),
+			values: generateTreeData({
+				data: d.values,
+				guess,
+				correct,
+				index: index + 1
+			})
+		}));
+
+	return nested.length ? nested : null;
+}
