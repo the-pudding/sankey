@@ -3,12 +3,14 @@ import generateTreeData from './generate-tree-data';
 
 const $graphic = d3.select('#graphic');
 const $result = $graphic.select('.graphic__result');
+const $question = $graphic.select('.graphic__question');
 const $figure = $result.select('figure');
 const $svg = $figure.select('svg');
 const $g = $svg.select('g');
 const $nodes = $g.select('.g-nodes');
 const $links = $g.select('.g-links');
-const $input = $graphic.select('input');
+const $input = $question.select('input');
+const $button = $question.select('button');
 
 let width = 0;
 let height = 0;
@@ -44,7 +46,7 @@ function resize(maxChars = 0) {
 	$g.attr('transform', `translate(${margin.left}, ${margin.top})`);
 }
 
-function updateChart({ treeData, versions, guess }) {
+function updateChart({ treeData, versions, guess, reveal }) {
 	const maxChars = d3.max(versions, d => d.name.length);
 	const guessDepth = guess.length;
 
@@ -73,9 +75,7 @@ function updateChart({ treeData, versions, guess }) {
 		.data(nodes.descendants().slice(1), d => d.data.id)
 		.join('path')
 		.attr('class', 'link')
-		// .attr('stroke-width', d => scaleWidth(d.value))
-		.attr('stroke-width', d => 4)
-		// .attr('stroke-opacity', d => scaleOpacity(d.data.count))
+		.attr('stroke-width', d => (reveal ? scaleWidth(d.value) : 4))
 		.attr('d', d => {
 			const x = d.x;
 			return `M${d.y},${x}C${(d.y + d.parent.y) / 2},${x} ${(d.y + d.parent.y) /
@@ -112,35 +112,34 @@ function updateChart({ treeData, versions, guess }) {
 	$node.selectAll('text').text(d => d.data.key);
 }
 
-function handleInputChange() {
+function handleInputChange(reveal) {
 	const val = this.value.toLowerCase();
 	const guess = val.length && val.charAt(0) === 'g' ? val : 'g';
 	this.value = guess;
 
-	if (guess.length) {
-		const clone = raw.map(d => ({ ...d }));
-		const match = clone.find(d => d.name === guess);
-		if (match) match.count += 1;
-		else clone.push({ name: guess, count: 1 });
-		const [treeData] = generateTreeData({
-			data: clone,
-			guess,
-			correct: 'gyllenhaal'
-		});
-		updateChart({ treeData, versions: clone, guess });
-	} else {
-		this.value = 'g';
-		const [treeData] = generateTreeData({
-			data: raw,
-			guess,
-			correct: 'gyllenhaal'
-		});
-		updateChart({ treeData, versions: raw, guess });
-	}
+	const versions = raw.map(d => ({ ...d }));
+	const match = versions.find(d => d.name === guess);
+	if (match) match.count += 1;
+	else versions.push({ name: guess, count: 1 });
+	const [treeData] = generateTreeData({
+		data: versions,
+		guess,
+		correct: 'gyllenhaal'
+	});
+	updateChart({ treeData, versions, guess, reveal });
+}
+
+function hanldeButtonClick() {
+	handleInputChange.call($input.node(), true);
+	$nodes.selectAll('.node').classed('is-visible', true);
+	$links.selectAll('.link').classed('is-visible', true);
+	$input.property('disabled', true);
 }
 
 function init() {
-	d3.json('https://pudding.cool/2019/02/sankey-data/data.json')
+	d3.json(
+		`https://pudding.cool/2019/02/sankey-data/data.json?version=${Date.now()}`
+	)
 		.then(console.log)
 		.catch(console.error);
 	// db.setup();
@@ -149,6 +148,7 @@ function init() {
 	const [treeData] = generateTreeData({ data: raw, correct: 'gyllenhaal' });
 	updateChart({ treeData, versions: raw, guess: 'Gyllenhaal' });
 	$input.on('keyup', handleInputChange);
+	$button.on('click', hanldeButtonClick);
 }
 
 export default { init, resize };
