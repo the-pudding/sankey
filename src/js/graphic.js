@@ -1,5 +1,6 @@
 import db from './db';
 import generateTreeData from './generate-tree-data';
+import britneyData from './britney';
 
 const $graphic = d3.select('#graphic');
 const $result = $graphic.select('.graphic__result');
@@ -15,28 +16,29 @@ const $button = $question.select('button');
 let width = 0;
 let height = 0;
 
-const dummy = [
-	{ name: ' cati', count: 8 },
-	{ name: ' cet', count: 5 },
-	{ name: ' catt', count: 9 },
-	{ name: ' cat', count: 5 }
-];
+const tutorialData = britneyData.filter(d => d.count > 1000).slice(0, 10);
+// const dummy = [
+// 	{ name: ' cati', count: 8 },
+// 	{ name: ' cet', count: 5 },
+// 	{ name: ' catt', count: 9 },
+// 	{ name: ' cat', count: 5 }
+// ];
 
-const raw = [
-	{ name: 'gillenhall', count: 5 },
-	{ name: 'gylenhal', count: 9 },
-	{ name: 'gylenhaal', count: 8 },
-	{ name: 'gylenhall', count: 18 },
-	{ name: 'gyllenhal', count: 41 },
-	{ name: 'gyllenhall', count: 41 },
-	{ name: 'gyllenhaal', count: 29 }
-];
+// const raw = [
+// 	{ name: 'gillenhall', count: 5 },
+// 	{ name: 'gylenhal', count: 9 },
+// 	{ name: 'gylenhaal', count: 8 },
+// 	{ name: 'gylenhall', count: 18 },
+// 	{ name: 'gyllenhal', count: 41 },
+// 	{ name: 'gyllenhall', count: 41 },
+// 	{ name: 'gyllenhaal', count: 29 }
+// ];
 
 function resize(maxChars = 0) {
 	const margin = { top: 30, right: 30, bottom: 30, left: 30 };
 	const widthPerChar = 48;
 	const w = widthPerChar * maxChars;
-	const h = 320;
+	const h = 480;
 	width = w - margin.left - margin.right;
 	height = h - margin.top - margin.bottom;
 
@@ -53,11 +55,17 @@ function updateChart({ treeData, versions, guess, reveal }) {
 	resize(maxChars);
 
 	// declares a tree layout and assigns the size
-	const treemap = d3.tree().size([height, width]);
+	const treemap = d3
+		.tree()
+		.size([height, width])
+		.separation((a, b) => 1000);
+
 	const root = d3.hierarchy(treeData, d => d.values);
 
+	console.log({ root });
+
 	root.descendants().forEach(node => {
-		node.sort((a, b) => d3.descending(a.data.correct, b.data.correct));
+		node.sort((a, b) => d3.ascending(a.data.key, b.data.key));
 	});
 
 	// maps the node data to the tree layout
@@ -65,8 +73,8 @@ function updateChart({ treeData, versions, guess, reveal }) {
 
 	const maxWidth = d3.max(nodes.descendants(), d => d.value);
 	const scaleWidth = d3
-		.scaleLinear()
-		.domain([0, maxWidth])
+		.scaleSqrt()
+		.domain([1, maxWidth])
 		.range([2, 30]);
 
 	// adds the links between the nodes
@@ -114,17 +122,17 @@ function updateChart({ treeData, versions, guess, reveal }) {
 
 function handleInputChange(reveal) {
 	const val = this.value.toLowerCase();
-	const guess = val.length && val.charAt(0) === 'g' ? val : 'g';
+	const guess = val.length && val.charAt(0) === 'b' ? val : 'b';
 	this.value = guess;
 
-	const versions = raw.map(d => ({ ...d }));
+	const versions = tutorialData.map(d => ({ ...d }));
 	const match = versions.find(d => d.name === guess);
 	if (match) match.count += 1;
 	else versions.push({ name: guess, count: 1 });
 	const [treeData] = generateTreeData({
 		data: versions,
 		guess,
-		correct: 'gyllenhaal'
+		correct: 'britney'
 	});
 	updateChart({ treeData, versions, guess, reveal });
 }
@@ -145,8 +153,11 @@ function init() {
 	// db.setup();
 	// console.log(db.getGuess());
 	resize();
-	const [treeData] = generateTreeData({ data: raw, correct: 'gyllenhaal' });
-	updateChart({ treeData, versions: raw, guess: 'Gyllenhaal' });
+	const [treeData] = generateTreeData({
+		data: tutorialData,
+		correct: 'britney'
+	});
+
 	$input.on('keyup', handleInputChange);
 	$button.on('click', hanldeButtonClick);
 }
