@@ -1,7 +1,7 @@
+import './pudding-chart/tree';
 import db from './db';
 import generateTreeData from './generate-tree-data';
 import britneyData from './britney';
-import puddingChartTree from './pudding-chart/tree';
 
 const SVG_VOLUME =
 	'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-volume-2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>';
@@ -142,16 +142,17 @@ function createQuestion(d) {
 	return $question;
 }
 
-function setupTutorial() {
+function showQuestion(id) {
 	const datum = {
-		...DICT.britney,
-		versions: [...tutorialData]
+		...DICT[id],
+		versions: [...tutorialData, { name: id.charAt(0), count: 1 }]
 	};
 
 	const $question = createQuestion(datum);
 
 	const [treeData] = generateTreeData({
 		data: datum.versions,
+		guess: id.charAt(0),
 		correct: datum.id
 	});
 
@@ -177,7 +178,7 @@ function init() {
 		.catch(console.error);
 	// db.setup();
 	// console.log(db.getGuess());
-	setupTutorial();
+	showQuestion('britney');
 	resize();
 }
 

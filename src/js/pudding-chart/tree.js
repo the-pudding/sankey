@@ -56,14 +56,20 @@ d3.selection.prototype.puddingChartTree = function init(options) {
 			},
 			// on resize, update new dimensions
 			resize() {
-				fontSize = 24;
-				charW = fontSize * 2;
-				charH = fontSize * 2;
 				const { treeW, treeH } = getTreeSize();
 
-				// defaults to grabbing dimensions from container element
-				const w = $sel.node().offsetWidth;
-				const h = window.innerHeight;
+				const w = $sel.node().offsetWidth - marginLeft - marginTop;
+				const h = window.innerHeight * 0.67 - marginTop - marginBottom;
+
+				const ratio = w < 600 ? 1.5 : 2;
+
+				const maxW = Math.floor(w / treeW);
+				const maxH = Math.floor(h / treeH);
+				const smaller = Math.min(maxW, maxH);
+
+				fontSize = Math.floor(smaller / ratio);
+				charW = fontSize * ratio;
+				charH = fontSize * ratio;
 
 				width = charW * treeW;
 				height = charH * treeH;
@@ -88,9 +94,8 @@ d3.selection.prototype.puddingChartTree = function init(options) {
 				});
 
 				const nodes = treemap(root);
-				// console.log(nodes.links());
 				const maxWidth = d3.max(nodes.descendants(), d => d.value);
-				console.log(maxWidth, shouldReveal);
+
 				const linkPath = d3
 					.linkHorizontal()
 					.x(d => d.y)
@@ -106,19 +111,11 @@ d3.selection.prototype.puddingChartTree = function init(options) {
 					.attr('stroke-width', d =>
 						shouldReveal ? scaleWidth(d.target.value) : 4
 					)
-					// .attr('d', d => {
-					// 	const { x, y } = d;
-					// 	return `M${y},${x}C${(y + d.parent.y) / 2},${x} ${(y + d.parent.y) /
-					// 		2}, ${d.parent.x} ${d.parent.y},${d.parent.x}`;
-					// })
-					// .each(d => console.log(d))
 					.attr('d', linkPath)
 					.classed('is-hidden', d => d.source.depth > guessDepth)
 					.classed('is-correct', d => d.target.data.correct)
 					.classed('is-guess', d => d.target.data.guess)
 					.classed('is-reveal', shouldReveal);
-
-				// adds each node as a group
 
 				const enterNode = sel => {
 					const $n = sel
