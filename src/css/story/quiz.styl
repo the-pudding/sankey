@@ -44,7 +44,15 @@
 			padding 1rem
 			border 1px solid $fg
 			background $off-white
-			// text-transform uppercase
 			font-family $sans
-			// font-weight 700
 
+
+	.quiz__nav
+		display flex
+		justify-content center
+		visibility hidden
+		&.is-visible
+			visibility visible
+		button
+			width 10rem
+			margin 0 0.5rem

@@ -8,7 +8,10 @@ const TUTORIAL_DATA = britneyData.filter(d => d.count > 1000).slice(0, 10);
 const SVG_VOLUME =
 	'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-volume-2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>';
 
+const $audio = d3.select('audio');
 const $quiz = d3.select('#quiz');
+const $content = $quiz.select('.quiz__content');
+const $nav = $quiz.select('.quiz__nav');
 const $all = d3.select('#all');
 
 const width = 0;
@@ -71,15 +74,19 @@ function handleInputChange() {
 		.render();
 }
 
-function handleButtonClick() {
+function handleResponseClick() {
 	quizChart.reveal(true);
 	const $input = d3.select(this.previousSibling);
 	handleInputChange.call($input.node());
 	$input.property('disabled', true);
 }
 
+function handlePersonClick() {
+	$audio.node().play();
+}
+
 function createQuestion(d) {
-	const $question = $quiz
+	const $question = $content
 		.append('div')
 		.attr('class', 'question')
 		.datum(d);
@@ -133,6 +140,8 @@ function createQuestion(d) {
 	// FIGURE
 	$question.append('figure').attr('class', 'question__figure');
 
+	// AUDIO
+	$audio.attr('src', `assets/audio/${d.id}.mp3`);
 	return $question;
 }
 
@@ -161,7 +170,10 @@ function showQuestion(id) {
 		.render();
 
 	$question.select('.question__response input').on('keyup', handleInputChange);
-	$question.select('.question__response button').on('click', handleButtonClick);
+	$question.select('.question__person button').on('click', handlePersonClick);
+	$question
+		.select('.question__response button')
+		.on('click', handleResponseClick);
 }
 
 function init() {
@@ -171,8 +183,13 @@ function init() {
 		.then(response => {
 			allData = response.data;
 			allData.britney = TUTORIAL_DATA;
-			const person = Math.random() < 0.5 ? 'russell' : 'britney';
-			showQuestion(person);
+			// const person = Math.random() < 0.5 ? 'russell' : 'britney';
+			showQuestion('britney');
+			$nav.classed('is-visible', true);
+			$nav.select('button').on('click', () => {
+				$content.select('.question').remove();
+				showQuestion('russell');
+			});
 		})
 		.catch(console.error);
 	// db.setup();
