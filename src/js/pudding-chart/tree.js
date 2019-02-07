@@ -14,10 +14,6 @@ d3.selection.prototype.puddingChartTree = function init(options) {
 		// dimension stuff
 		let width = 0;
 		let height = 0;
-		const marginTop = 32;
-		const marginBottom = 32;
-		const marginLeft = 32;
-		const marginRight = 32;
 
 		let fontSize = 0;
 		let charW = 0;
@@ -41,14 +37,22 @@ d3.selection.prototype.puddingChartTree = function init(options) {
 			return { treeW: root.height, treeH: root.value };
 		}
 
+		function getFontSize({ w, h, r, margin = 0 }) {
+			const { treeW, treeH } = getTreeSize();
+
+			const maxW = Math.floor((w - margin * 2) / treeW);
+			const maxH = Math.floor((h - margin * 2) / treeH);
+			const smaller = Math.min(maxW, maxH);
+
+			fontSize = Math.floor(smaller / r);
+			return fontSize;
+		}
+
 		const Chart = {
 			// called once at start
 			init() {
 				$svg = $sel.append('svg').attr('class', 'pudding-chart');
 				const $g = $svg.append('g');
-
-				// offset chart for margins
-				$g.attr('transform', `translate(${marginLeft}, ${marginTop})`);
 
 				// setup viz group
 				$links = $g.append('g').attr('class', 'g-links');
@@ -56,27 +60,28 @@ d3.selection.prototype.puddingChartTree = function init(options) {
 			},
 			// on resize, update new dimensions
 			resize() {
+				const w = $sel.node().offsetWidth;
+				const h = window.innerHeight * 0.67;
+
+				const r = w < 600 ? 1.5 : 2;
+
+				const margin = getFontSize({ w, h, r });
+				fontSize = getFontSize({ w, h, r, margin });
+
+				charW = fontSize * r;
+				charH = fontSize * r;
+
 				const { treeW, treeH } = getTreeSize();
-
-				const w = $sel.node().offsetWidth - marginLeft - marginTop;
-				const h = window.innerHeight * 0.67 - marginTop - marginBottom;
-
-				const ratio = w < 600 ? 1.5 : 2;
-
-				const maxW = Math.floor(w / treeW);
-				const maxH = Math.floor(h / treeH);
-				const smaller = Math.min(maxW, maxH);
-
-				fontSize = Math.floor(smaller / ratio);
-				charW = fontSize * ratio;
-				charH = fontSize * ratio;
 
 				width = charW * treeW;
 				height = charH * treeH;
 
 				$svg
-					.attr('width', width + marginLeft + marginRight)
-					.attr('height', height + marginTop + marginBottom);
+					.attr('width', width + margin * 2)
+					.attr('height', height + margin * 2);
+
+				// offset chart for margins
+				$svg.select('g').attr('transform', `translate(${margin}, ${margin})`);
 
 				return Chart;
 			},
@@ -98,7 +103,10 @@ d3.selection.prototype.puddingChartTree = function init(options) {
 
 				const linkPath = d3
 					.linkHorizontal()
-					.x(d => d.y)
+					.x(d => {
+						const extra = d.children ? 0 : fontSize;
+						return d.y + extra;
+					})
 					.y(d => d.x);
 
 				scaleWidth.domain([1, maxWidth]).range([2, 30]);

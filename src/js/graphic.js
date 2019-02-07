@@ -2,7 +2,9 @@ import './pudding-chart/tree';
 import db from './db';
 import generateTreeData from './generate-tree-data';
 import britneyData from './britney';
+import PEOPLE from './people';
 
+const TUTORIAL_DATA = britneyData.filter(d => d.count > 1000).slice(0, 10);
 const SVG_VOLUME =
 	'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-volume-2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>';
 
@@ -12,18 +14,10 @@ const $all = d3.select('#all');
 const width = 0;
 const height = 0;
 
-const tutorialData = britneyData.filter(d => d.count > 1000).slice(0, 10);
-
 let quizChart = null;
 const allCharts = [];
 
-const DICT = {
-	britney: {
-		id: 'britney',
-		pos: 0,
-		fullname: ['britney', 'spears']
-	}
-};
+let allData = {};
 
 function resize() {
 	if (quizChart) quizChart.resize();
@@ -95,7 +89,7 @@ function createQuestion(d) {
 
 	$person
 		.append('img')
-		.attr('src', `assets/images/${d.id}.png`)
+		.attr('src', `assets/images/${d.id}.jpg`)
 		.attr('alt', d.id);
 
 	const $button = $person.append('button').attr('class', 'btn');
@@ -144,8 +138,8 @@ function createQuestion(d) {
 
 function showQuestion(id) {
 	const datum = {
-		...DICT[id],
-		versions: [...tutorialData, { name: id.charAt(0), count: 1 }]
+		...PEOPLE.find(d => d.id === id),
+		versions: [...allData[id], { name: id.charAt(0), count: 1 }]
 	};
 
 	const $question = createQuestion(datum);
@@ -174,11 +168,16 @@ function init() {
 	d3.json(
 		`https://pudding.cool/2019/02/sankey-data/data.json?version=${Date.now()}`
 	)
-		.then(console.log)
+		.then(response => {
+			allData = response.data;
+			allData.britney = TUTORIAL_DATA;
+			const person = Math.random() < 0.5 ? 'russell' : 'britney';
+			showQuestion(person);
+		})
 		.catch(console.error);
 	// db.setup();
 	// console.log(db.getGuess());
-	showQuestion('britney');
+
 	resize();
 }
 
