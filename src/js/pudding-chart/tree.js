@@ -7,7 +7,7 @@
  4b. const chart = d3.select('.thing').datum(datum).puddingChartLine();
 */
 
-d3.selection.prototype.puddingChartTree = function init(options) {
+d3.selection.prototype.puddingChartTree = function init({ maxDepth }) {
 	function createChart(el) {
 		const $sel = d3.select(el);
 		let data = $sel.datum();
@@ -65,8 +65,11 @@ d3.selection.prototype.puddingChartTree = function init(options) {
 
 				const r = w < 600 ? 1.5 : 2;
 
-				const margin = getFontSize({ w, h, r });
-				fontSize = getFontSize({ w, h, r, margin });
+				// const margin = getFontSize({ w, h, r });
+				// fontSize = getFontSize({ w, h, r, margin });
+
+				fontSize = Math.min(w, h) / maxDepth / r;
+				const margin = fontSize * 2;
 
 				charW = fontSize * r;
 				charH = fontSize * r;

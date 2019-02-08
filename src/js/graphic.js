@@ -16,35 +16,24 @@ const $all = d3.select('#all');
 
 const width = 0;
 const height = 0;
+let maxDepth = 0;
 
 let quizChart = null;
-const allCharts = [];
+let allCharts = [];
 
 let allData = {};
+
+function getTreeSize(data) {
+	const [treeData] = generateTreeData({ data });
+
+	const root = d3.hierarchy(treeData, d => d.values);
+	root.count();
+	return { treeW: root.height, treeH: root.value };
+}
 
 function resize() {
 	if (quizChart) quizChart.resize();
 }
-// function resize(maxChars = 0) {
-// 	const margin = { top: 30, right: 30, bottom: 30, left: 30 };
-// 	const widthPerChar = 48;
-// 	const w = widthPerChar * maxChars;
-// 	const h = 480;
-// 	width = w - margin.left - margin.right;
-// 	height = h - margin.top - margin.bottom;
-
-// 	$svg
-// 		.attr('width', width + margin.left + margin.right)
-// 		.attr('height', height + margin.top + margin.bottom);
-// 	$g.attr('transform', `translate(${margin.left}, ${margin.top})`);
-// }
-
-// function updateChart({ treeData, versions, guess, reveal }) {
-// 	const maxChars = d3.max(versions, d => d.name.length);
-// 	const guessDepth = guess.length;
-
-// 	resize(maxChars);
-// }
 
 function handleInputChange() {
 	const $input = d3.select(this);
@@ -65,10 +54,10 @@ function handleInputChange() {
 		correct: id
 	});
 
-	const chars = d3.max(versionsClone, d => d.name.length);
+	// const chars = d3.max(versionsClone, d => d.name.length);
 	quizChart
 		.data(treeData)
-		.chars(chars)
+		// .chars(chars)
 		.guess(guess.length - 1)
 		.resize()
 		.render();
@@ -83,6 +72,40 @@ function handleResponseClick() {
 
 function handlePersonClick() {
 	$audio.node().play();
+}
+
+function handleNewClick() {
+	$content.select('.question').remove();
+	showQuestion('russell');
+}
+
+function handleAllClick() {
+	$content.select('.question').remove();
+
+	allCharts = PEOPLE.map(person => {
+		const { id, fullname } = person;
+
+		const [treeData] = generateTreeData({
+			data: allData[id],
+			correct: id
+		});
+
+		// const chars = d3.max(datum.versions, d => d.name.length);
+		const $person = $all.append('div').attr('class', 'person');
+		$person.append('p').text(fullname.join(' '));
+
+		const $figure = $person.append('figure');
+
+		const chart = $figure
+			.datum(treeData)
+			.puddingChartTree({ maxDepth })
+			// .chars(chars)
+			.reveal(true)
+			.resize()
+			.render();
+
+		return chart;
+	});
 }
 
 function createQuestion(d) {
@@ -159,13 +182,13 @@ function showQuestion(id) {
 		correct: datum.id
 	});
 
-	const chars = d3.max(datum.versions, d => d.name.length);
+	// const chars = d3.max(datum.versions, d => d.name.length);
 
 	quizChart = d3
 		.select('figure')
 		.datum(treeData)
-		.puddingChartTree()
-		.chars(chars)
+		.puddingChartTree({ maxDepth })
+		// .chars(chars)
 		.resize()
 		.render();
 
@@ -176,6 +199,13 @@ function showQuestion(id) {
 		.on('click', handleResponseClick);
 }
 
+function setMaxDepth() {
+	maxDepth = d3.max(Object.keys(allData), d => {
+		const { treeW, treeH } = getTreeSize(allData[d]);
+		return Math.max(treeW, treeH);
+	});
+}
+
 function init() {
 	d3.json(
 		`https://pudding.cool/2019/02/sankey-data/data.json?version=${Date.now()}`
@@ -183,13 +213,12 @@ function init() {
 		.then(response => {
 			allData = response.data;
 			allData.britney = TUTORIAL_DATA;
+			setMaxDepth();
 			// const person = Math.random() < 0.5 ? 'russell' : 'britney';
 			showQuestion('britney');
 			$nav.classed('is-visible', true);
-			$nav.select('button').on('click', () => {
-				$content.select('.question').remove();
-				showQuestion('russell');
-			});
+			$nav.select('.btn--new').on('click', handleNewClick);
+			$nav.select('.btn--all').on('click', handleAllClick);
 		})
 		.catch(console.error);
 	// db.setup();
