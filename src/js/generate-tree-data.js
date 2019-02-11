@@ -1,4 +1,10 @@
-export default function generateTreeData({ data, guess, correct, index = 0 }) {
+export default function generateTreeData({
+	data,
+	guess,
+	correct,
+	total = 1,
+	index = 0
+}) {
 	// goal: values = {key, count, data}
 
 	// get character at new index
@@ -22,11 +28,13 @@ export default function generateTreeData({ data, guess, correct, index = 0 }) {
 			correct: d.values.map(v => v.name).includes(correct),
 			guess: d.values.map(v => v.name).includes(guess),
 			value: d3.sum(d.values, v => v.count),
+			percent: d3.sum(d.values, v => v.count) / total,
 			values: generateTreeData({
 				data: d.values,
 				guess,
 				correct,
-				index: index + 1
+				index: index + 1,
+				total
 			})
 		}));
 

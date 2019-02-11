@@ -10,7 +10,8 @@ const SVG_VOLUME =
 
 const $audio = d3.select('audio');
 const $quiz = d3.select('#quiz');
-const $content = $quiz.select('.quiz__content');
+const $quizContent = $quiz.select('.quiz__content');
+const $tutorialContent = $quiz.select('.tutorial__content');
 const $nav = $quiz.select('.quiz__nav');
 const $all = d3.select('#all');
 
@@ -48,19 +49,20 @@ function handleInputChange() {
 	const match = versionsClone.find(d => d.name === guess);
 	if (match) match.count += 1;
 	else versionsClone.push({ name: guess, count: 1 });
+
+	const total = d3.sum(versionsClone, d => d.count);
 	const [treeData] = generateTreeData({
 		data: versionsClone,
 		guess,
-		correct: id
+		correct: id,
+		total
 	});
 
-	// const chars = d3.max(versionsClone, d => d.name.length);
 	quizChart
 		.data(treeData)
-		// .chars(chars)
 		.guess(guess.length - 1)
 		.resize()
-		.render();
+		.render(true);
 }
 
 function handleResponseClick() {
@@ -75,22 +77,24 @@ function handlePersonClick() {
 }
 
 function handleNewClick() {
-	$content.select('.question').remove();
+	$quizContent.select('.question').remove();
 	showQuestion('russell');
 }
 
 function handleAllClick() {
-	$content.select('.question').remove();
+	$quizContent.select('.question').remove();
 
 	allCharts = PEOPLE.map(person => {
 		const { id, fullname } = person;
 
+		const total = d3.sum(allData[id], d => d.count);
+
 		const [treeData] = generateTreeData({
 			data: allData[id],
-			correct: id
+			correct: id,
+			total
 		});
 
-		// const chars = d3.max(datum.versions, d => d.name.length);
 		const $person = $all.append('div').attr('class', 'person');
 		$person.append('p').text(fullname.join(' '));
 
@@ -99,7 +103,6 @@ function handleAllClick() {
 		const chart = $figure
 			.datum(treeData)
 			.puddingChartTree({ maxDepth })
-			// .chars(chars)
 			.reveal(true)
 			.resize()
 			.render();
@@ -108,8 +111,14 @@ function handleAllClick() {
 	});
 }
 
+function handleSkipClick(event) {
+	event.preventDefault();
+	handleAllClick();
+	return false;
+}
+
 function createQuestion(d) {
-	const $question = $content
+	const $question = $quizContent
 		.append('div')
 		.attr('class', 'question')
 		.datum(d);
@@ -176,19 +185,19 @@ function showQuestion(id) {
 
 	const $question = createQuestion(datum);
 
+	const total = d3.sum(datum.versions, d => d.count);
+
 	const [treeData] = generateTreeData({
 		data: datum.versions,
 		guess: id.charAt(0),
-		correct: datum.id
+		correct: datum.id,
+		total
 	});
-
-	// const chars = d3.max(datum.versions, d => d.name.length);
 
 	quizChart = d3
 		.select('figure')
 		.datum(treeData)
 		.puddingChartTree({ maxDepth })
-		// .chars(chars)
 		.resize()
 		.render();
 
@@ -219,6 +228,9 @@ function init() {
 			$nav.classed('is-visible', true);
 			$nav.select('.btn--new').on('click', handleNewClick);
 			$nav.select('.btn--all').on('click', handleAllClick);
+			d3.select('.btn--skip')
+				.node()
+				.addEventListener('click', handleSkipClick);
 		})
 		.catch(console.error);
 	// db.setup();

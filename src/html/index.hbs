@@ -26,11 +26,35 @@
 	<main id='content'>
 
 		{{> story/intro }}
+
+		<section id='prelude'>
+			<div class='prose'>
+				{{#each doc.prelude}}
+				<p>{{{value}}}</p>
+				{{/each}}
+			</div>
+		</section>
+
+		<section id='tutorial'>
+			<div class='prose'>
+				<h3 class='prose__hed'>{{{doc.tutorialHed}}}</h3>
+				{{#each doc.tutorial}}
+				<p>{{{value}}}</p>
+				{{/each}}
+			</div>
+			<div class='tutorial__content'></div>
+		</section>
 		<section id='quiz'>
+			<div class='prose'>
+				<h3 class='prose__hed'>{{{doc.quizHed}}}</h3>
+				{{#each doc.quiz}}
+				<p>{{{value}}}</p>
+				{{/each}}
+			</div>
 			<div class='quiz__content'></div>
 			<nav class='quiz__nav'>
-				<button class='btn btn--new'>Give me a new one</button>
-				<button class='btn btn--all'>Skip to results</button>
+				<button class='btn btn--new'>{{{doc.buttonNew}}}</button>
+				<button class='btn btn--all'>{{{doc.buttonAll}}}</button>
 			</nav>
 		</section>
 		<section id='all'></section>

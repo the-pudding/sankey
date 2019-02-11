@@ -9,6 +9,8 @@
 
 d3.selection.prototype.puddingChartTree = function init({ maxDepth }) {
 	function createChart(el) {
+		const DEFAULT_WIDTH = 4;
+
 		const $sel = d3.select(el);
 		let data = $sel.datum();
 		// dimension stuff
@@ -18,7 +20,6 @@ d3.selection.prototype.puddingChartTree = function init({ maxDepth }) {
 		let fontSize = 0;
 		let charW = 0;
 		let charH = 0;
-		let maxChars = 0;
 		let guessDepth = 0;
 		let shouldReveal = false;
 
@@ -37,15 +38,18 @@ d3.selection.prototype.puddingChartTree = function init({ maxDepth }) {
 			return { treeW: root.height, treeH: root.value };
 		}
 
-		function getFontSize({ w, h, r, margin = 0 }) {
-			const { treeW, treeH } = getTreeSize();
-
-			const maxW = Math.floor((w - margin * 2) / treeW);
-			const maxH = Math.floor((h - margin * 2) / treeH);
-			const smaller = Math.min(maxW, maxH);
-
-			fontSize = Math.floor(smaller / r);
-			return fontSize;
+		function getLinkOffset({ source, target }) {
+			// look at all sources children
+			// calculate offsets for all children
+			let tally = 0;
+			const widths = source.children.map(d => {
+				const w = shouldReveal ? scaleWidth(d.value) : DEFAULT_WIDTH;
+				const off = tally + w / 2;
+				tally += w;
+				return { id: d.data.id, off, w };
+			});
+			const match = widths.find(d => d.id === target.data.id);
+			return match.off;
 		}
 
 		const Chart = {
@@ -65,10 +69,7 @@ d3.selection.prototype.puddingChartTree = function init({ maxDepth }) {
 
 				const r = w < 600 ? 1.5 : 2;
 
-				// const margin = getFontSize({ w, h, r });
-				// fontSize = getFontSize({ w, h, r, margin });
-
-				fontSize = Math.min(w, h) / maxDepth / r;
+				fontSize = Math.floor(Math.min(w, h) / maxDepth / r);
 				const margin = fontSize * 2;
 
 				charW = fontSize * r;
@@ -89,7 +90,7 @@ d3.selection.prototype.puddingChartTree = function init({ maxDepth }) {
 				return Chart;
 			},
 
-			render() {
+			render(showNode) {
 				const treemap = d3
 					.tree()
 					.size([height, width])
@@ -120,7 +121,7 @@ d3.selection.prototype.puddingChartTree = function init({ maxDepth }) {
 					.join('path')
 					.attr('class', 'link')
 					.attr('stroke-width', d =>
-						shouldReveal ? scaleWidth(d.target.value) : 4
+						shouldReveal ? scaleWidth(d.target.value) : DEFAULT_WIDTH
 					)
 					.attr('d', linkPath)
 					.classed('is-hidden', d => d.source.depth > guessDepth)
@@ -134,10 +135,12 @@ d3.selection.prototype.puddingChartTree = function init({ maxDepth }) {
 						.attr('class', d => `node node--${d.values ? 'internal' : 'leaf'}`);
 					$n.append('text')
 						.classed('text--bg', true)
-						.attr('alignment-baseline', 'middle');
+						.attr('y', fontSize / 4)
+						.style('font-size', `${fontSize}px`);
 					$n.append('text')
 						.classed('text--fg', true)
-						.attr('alignment-baseline', 'middle');
+						.attr('y', fontSize / 4)
+						.style('font-size', `${fontSize}px`);
 					return $n;
 				};
 
@@ -146,13 +149,13 @@ d3.selection.prototype.puddingChartTree = function init({ maxDepth }) {
 					.data(nodes.descendants(), d => d.data.id)
 					.join(enterNode)
 					.attr('transform', d => `translate(${d.y}, ${d.x})`)
-					.style('font-size', fontSize)
 					.classed('is-correct', d => d.data.correct)
 					.classed('is-guess', d => d.data.guess)
 					.classed('is-hidden', d => d.depth > guessDepth)
 					.classed('is-reveal', shouldReveal);
 
 				$node.selectAll('text').text(d => d.data.key);
+
 				return Chart;
 			},
 			// get / set data
@@ -160,12 +163,6 @@ d3.selection.prototype.puddingChartTree = function init({ maxDepth }) {
 				if (!arguments.length) return data;
 				data = val;
 				$sel.datum(data);
-				return Chart;
-			},
-
-			chars(val) {
-				if (!arguments.length) return maxChars;
-				maxChars = val;
 				return Chart;
 			},
 

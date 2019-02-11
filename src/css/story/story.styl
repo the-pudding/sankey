@@ -1,5 +1,9 @@
 /* CUSTOM STORY STYLE */
+html
+	scroll-behavior smooth
 
+.prose__hed
+	margin 0
 
 svg.pudding-chart
 	margin 0 auto
@@ -30,6 +34,7 @@ svg.pudding-chart
 			font-family monospace
 			font-weight bold
 			text-transform uppercase
+			opacity 0.5
 		.text--bg
 			fill none
 			stroke-width 3px
@@ -55,3 +60,10 @@ button
 	border 1px solid $fg
 	background $off-white
 	font-family $sans
+
+	&.button--skip
+		border none
+		background transparent
+		border-bottom 1px solid currentColor
+		padding 0
+		margin 0
