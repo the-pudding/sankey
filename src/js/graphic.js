@@ -1,6 +1,7 @@
 import './pudding-chart/tree';
 import db from './db';
 import generateTreeData from './generate-tree-data';
+import generateSankeyData from './generate-sankey-data';
 import britneyData from './britney';
 import PEOPLE from './people';
 
@@ -193,6 +194,10 @@ function showQuestion(id) {
 		correct: datum.id,
 		total
 	});
+
+	const sankeyData = generateSankeyData(treeData);
+
+	console.log(sankeyData);
 
 	quizChart = d3
 		.select('figure')
