@@ -3,7 +3,8 @@ export default function generateTreeData({
 	guess,
 	correct,
 	total = 1,
-	index = 0
+	index = 0,
+	id = ''
 }) {
 	// goal: values = {key, count, data}
 
@@ -23,7 +24,7 @@ export default function generateTreeData({
 		.filter(d => d.key)
 		.map(d => ({
 			...d,
-			id: `${index}-${d.key}`,
+			id: d.values[0].name.slice(0, index + 1),
 			index,
 			correct: d.values.map(v => v.name).includes(correct),
 			guess: d.values.map(v => v.name).includes(guess),
@@ -35,6 +36,7 @@ export default function generateTreeData({
 				correct,
 				index: index + 1,
 				total
+				// id: `${id}-${d.key}`
 			})
 		}));
 

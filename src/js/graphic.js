@@ -1,4 +1,5 @@
 import './pudding-chart/tree';
+import './pudding-chart/sankey';
 import db from './db';
 import generateTreeData from './generate-tree-data';
 import generateSankeyData from './generate-sankey-data';
@@ -188,21 +189,25 @@ function showQuestion(id) {
 
 	const total = d3.sum(datum.versions, d => d.count);
 
-	const [treeData] = generateTreeData({
+	// const [treeData] = generateTreeData({
+	// 	data: datum.versions,
+	// 	guess: id.charAt(0),
+	// 	correct: datum.id,
+	// 	total
+	// });
+
+	const sankeyData = generateSankeyData({
 		data: datum.versions,
 		guess: id.charAt(0),
 		correct: datum.id,
 		total
 	});
 
-	const sankeyData = generateSankeyData(treeData);
-
-	console.log(sankeyData);
-
 	quizChart = d3
 		.select('figure')
-		.datum(treeData)
-		.puddingChartTree({ maxDepth })
+		.datum(sankeyData)
+		.puddingChartSankey()
+		.correct(datum.id)
 		.resize()
 		.render();
 
