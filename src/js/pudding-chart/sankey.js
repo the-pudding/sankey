@@ -10,11 +10,11 @@
 d3.selection.prototype.puddingChartSankey = function init() {
 	function createChart(el) {
 		const DEFAULT_WIDTH = 2;
-		const MIN_FONT_SIZE = 12;
-		const MAX_FONT_SIZE = 24;
-		const MARGIN = MAX_FONT_SIZE * 2;
+		const MIN_FONT_SIZE = 14;
+		const MARGIN = MIN_FONT_SIZE;
+		const MAX_CHARS = 14;
 
-		const scaleFont = d3.scaleLinear().range([MIN_FONT_SIZE, MAX_FONT_SIZE]);
+		const scaleFont = d3.scaleLinear();
 		const scaleColor = d3.scaleSequential().interpolator(d3.interpolateWarm);
 
 		const $sel = d3.select(el);
@@ -22,6 +22,9 @@ d3.selection.prototype.puddingChartSankey = function init() {
 
 		let width = 0;
 		let height = 0;
+		let linkWidth = 0;
+		let nameWidth = 0;
+		let maxFontSize = 0;
 
 		let guessDepth = 0;
 		let shouldReveal = false;
@@ -57,24 +60,24 @@ d3.selection.prototype.puddingChartSankey = function init() {
 		function customLine(d) {
 			return d3.line()([
 				[
-					d.node.y0 * width + DEFAULT_WIDTH,
+					d.node.y0 * nameWidth + DEFAULT_WIDTH,
 					d.node.x0 * height +
 						((d.node.x1 - d.node.x0) * height - d.node.h) / 2 +
 						d[0][0] * d.node.h
 				],
 				[
-					d.child.y0 * width,
+					d.child.y0 * nameWidth,
 					d.child.x0 * height +
 						((d.child.x1 - d.child.x0) * height - d.child.h) / 2
 				],
 				[
-					d.child.y0 * width,
+					d.child.y0 * nameWidth,
 					d.child.x0 * height +
 						((d.child.x1 - d.child.x0) * height - d.child.h) / 2 +
 						d.child.h
 				],
 				[
-					d.node.y0 * width + DEFAULT_WIDTH,
+					d.node.y0 * nameWidth + DEFAULT_WIDTH,
 					d.node.x0 * height +
 						((d.node.x1 - d.node.x0) * height - d.node.h) / 2 +
 						d[0][1] * d.node.h
@@ -88,8 +91,6 @@ d3.selection.prototype.puddingChartSankey = function init() {
 				$svg = $sel.append('svg').attr('class', 'pudding-chart');
 				const $g = $svg.append('g');
 
-				$svg.select('g').attr('transform', `translate(${MARGIN}, ${MARGIN})`);
-
 				// setup viz group
 				$links = $g.append('g').attr('class', 'g-links');
 				$nodes = $g.append('g').attr('class', 'g-nodes');
@@ -97,14 +98,27 @@ d3.selection.prototype.puddingChartSankey = function init() {
 			// on resize, update new dimensions
 			resize() {
 				const w = $sel.node().offsetWidth;
-				const h = window.innerHeight * 0.67;
+				// TODO do height minus elements (input + buttons)
+				const h = window.innerHeight * 0.75;
+
+				linkWidth = Math.floor((w - MARGIN * 2) / MAX_CHARS);
+
+				maxFontSize = Math.max(
+					MIN_FONT_SIZE * 1.25,
+					Math.floor(linkWidth * 0.67)
+				);
 
 				width = w - MARGIN * 2;
 				height = h - MARGIN * 2;
+				nameWidth = linkWidth * correctName.length + 1;
 
+				$svg.attr('width', width + MARGIN).attr('height', height + MARGIN * 2);
+
+				// center
+				const offsetX = nameWidth / 2;
 				$svg
-					.attr('width', width + MARGIN * 2)
-					.attr('height', height + MARGIN * 2);
+					.select('g')
+					.attr('transform', `translate(${MARGIN + offsetX}, ${MARGIN})`);
 
 				return Chart;
 			},
@@ -112,8 +126,10 @@ d3.selection.prototype.puddingChartSankey = function init() {
 			render() {
 				const h = height * 0.67;
 				const w = DEFAULT_WIDTH;
-				const linkWidth = Math.floor(width / correctName.length);
 
+				scaleFont
+					.domain(d3.extent(data.descendants(), d => d.value))
+					.range([MIN_FONT_SIZE, maxFontSize]);
 				d3
 					.treemap()
 					.size([w, h])
@@ -126,16 +142,12 @@ d3.selection.prototype.puddingChartSankey = function init() {
 
 				d3.partition()(data);
 
-				scaleFont.domain(d3.extent(data.descendants(), d => d.value));
-
 				const createText = ($n, c) => {
 					$n.append('text')
 						.text(d => d.data.char)
 						.attr('alignment-baseline', 'middle')
 						.attr('text-anchor', 'middle')
 						.attr('class', `text--${c}`);
-
-					// .style('font-size', d => `${fontScale(d.value)}px`);
 				};
 
 				const enterNode = sel => {
@@ -143,9 +155,7 @@ d3.selection.prototype.puddingChartSankey = function init() {
 
 					// $n.attr('class', d => `node node--${d.values ? 'internal' : 'leaf'}`);
 
-					$n.append('rect')
-						.attr('width', w)
-						.style('fill', d => scaleColor(d.depth - 1));
+					$n.append('rect').attr('width', w);
 
 					$n.call(createText, 'bg');
 					$n.call(createText, 'fg');
@@ -159,7 +169,7 @@ d3.selection.prototype.puddingChartSankey = function init() {
 					.join(enterNode)
 					.attr(
 						'transform',
-						d => `translate(${d.y0 * width}, ${d.x0 * height})`
+						d => `translate(${d.y0 * nameWidth}, ${d.x0 * height})`
 					)
 					.classed('is-correct', d => d.data.correct)
 					.classed('is-guess', d => d.data.guess)
@@ -169,7 +179,8 @@ d3.selection.prototype.puddingChartSankey = function init() {
 				$node
 					.selectAll('text')
 					.attr('y', d => ((d.x1 - d.x0) * height - d.h) / 2 + d.h * 0.5)
-					.attr('x', linkWidth / 2);
+					.attr('x', d => linkWidth / 2 - 4)
+					.style('font-size', d => `${scaleFont(d.value)}px`);
 
 				$node
 					.select('rect')
@@ -190,7 +201,7 @@ d3.selection.prototype.puddingChartSankey = function init() {
 						});
 					});
 				});
-				console.log(stackData);
+
 				$links
 					.selectAll('.link')
 					.data(stackData, d => d.child.id)
@@ -198,8 +209,8 @@ d3.selection.prototype.puddingChartSankey = function init() {
 					.attr('class', 'link')
 					.style('fill', d => scaleColor(d.child.depth))
 					.classed('is-hidden', d => d.node.depth > guessDepth)
+					.classed('is-guess', d => d.node.data.guess)
 					.classed('is-correct', d => d.child.data.correct)
-					.classed('is-guess', d => d.child.data.guess)
 					.classed('is-reveal', shouldReveal)
 					.attr('d', customLine);
 
@@ -244,7 +255,7 @@ d3.selection.prototype.puddingChartSankey = function init() {
 			correct(val) {
 				if (!arguments.length) return correctName;
 				correctName = val;
-				scaleColor.domain([correctName.length, 0]);
+				scaleColor.domain([0, correctName.length]);
 				return Chart;
 			}
 		};

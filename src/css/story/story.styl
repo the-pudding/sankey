@@ -2,8 +2,15 @@
 html
 	scroll-behavior smooth
 
+.prose p
+	set-type-size(large, true)
+
 .prose__hed
 	margin 0
+	margin-top 3rem
+	set-type-size(x-large, true)
+	font-weight 700
+
 
 svg.pudding-chart
 	margin 0 auto
@@ -11,35 +18,39 @@ svg.pudding-chart
 	user-select none
 	.node
 		opacity 0
+		
 		&.is-hidden
 			opacity 0
 		
 		&.is-guess
 			opacity 1
 			text
-				fill $fg
+				fill $black
 
 		&.is-reveal
 			opacity 1
 			&.is-correct
 				text
-					fill green
+					fill $black
 			&.is-guess
 				text
-					fill $fg
+					fill $black
 
 		
+		rect
+			opacity 1
 				
 		text
-			font-family monospace
+			font-family $sans
 			font-weight bold
 			text-transform uppercase
-			opacity 0.5
+			opacity 1
 
 		.text--bg
 			fill none
 			stroke-width 3px
 			stroke $bg
+			stroke-opacity 0.67
 		
 		.text--fg
 			fill $fg
@@ -47,16 +58,15 @@ svg.pudding-chart
 	.link
 		stroke none
 		fill-opacity 1
-		opacity 0.5
+		opacity 0.33
 		&.is-hidden
 			opacity 0
 		&.is-guess
-			opacity 1
-			fill black
+			opacity 0.85
 		&.is-reveal
-			opacity 1
+			opacity 0.85
 			&.is-correct
-				fill black
+				// 
 	
 button
 	padding 1rem

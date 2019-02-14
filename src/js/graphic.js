@@ -6,7 +6,17 @@ import generateSankeyData from './generate-sankey-data';
 import britneyData from './britney';
 import PEOPLE from './people';
 
-const TUTORIAL_DATA = britneyData.filter(d => d.count > 1000).slice(0, 10);
+// const scaleCount = d3.scaleLog().domain([1, britneyData[0].count]);
+const scaleCount = d3.scaleSqrt().domain([1, britneyData[0].count]);
+const TUTORIAL_DATA = britneyData
+	.filter(d => d.count > 1000)
+	.slice(0, 10)
+	.map(d => ({
+		...d,
+		name: `${d.name} `,
+		count_scaled: scaleCount(d.count)
+	}));
+
 const SVG_VOLUME =
 	'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-volume-2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>';
 
@@ -50,9 +60,10 @@ function handleInputChange() {
 
 	const match = versionsClone.find(d => d.name === guess);
 	if (match) match.count += 1;
-	else versionsClone.push({ name: guess, count: 1 });
+	else
+		versionsClone.push({ name: guess, count: 1, count_scaled: scaleCount(1) });
 
-	const total = d3.sum(versionsClone, d => d.count);
+	const total = d3.sum(versionsClone, d => d.count_scaled);
 
 	const sankeyData = generateSankeyData({
 		data: versionsClone,
@@ -103,7 +114,7 @@ function handleAllClick() {
 	allCharts = PEOPLE.map(person => {
 		const { id, fullname } = person;
 
-		const total = d3.sum(allData[id], d => d.count);
+		const total = d3.sum(allData[id], d => d.count_scale);
 
 		const [treeData] = generateTreeData({
 			data: allData[id],
@@ -176,7 +187,7 @@ function createQuestion(d) {
 	const start = d.pos === 0 ? first.charAt(0) : last.charAt(0);
 	$response
 		.append('input')
-		.attr('maxlength', 16)
+		.attr('maxlength', 14)
 		.attr('spellcheck', false)
 		.attr('data-start', start)
 		.attr('value', start);
@@ -196,12 +207,15 @@ function createQuestion(d) {
 function showQuestion(id) {
 	const datum = {
 		...PEOPLE.find(d => d.id === id),
-		versions: [...allData[id], { name: id.charAt(0), count: 1 }]
+		versions: [
+			...allData[id],
+			{ name: id.charAt(0), count: 1, count_scaled: scaleCount(1) }
+		]
 	};
 
 	const $question = createQuestion(datum);
 
-	const total = d3.sum(datum.versions, d => d.count);
+	const total = d3.sum(datum.versions, d => d.count_scaled);
 
 	const sankeyData = generateSankeyData({
 		data: datum.versions,

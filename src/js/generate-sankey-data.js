@@ -4,6 +4,7 @@ export default function generateSankeyData({
 	guess,
 	total = 1
 }) {
+	correct = `${correct} `;
 	const max = d3.max(data, d => d.name.length) + 1;
 	const min = 1;
 
@@ -13,7 +14,7 @@ export default function generateSankeyData({
 			.map(d => ({
 				...d,
 				temp: d.name.substring(0, index),
-				depthCount: d.name === d.name.substring(0, index) ? d.count : 0
+				depthCount: d.name === d.name.substring(0, index) ? d.count_scaled : 0
 			}));
 
 		const nested = d3
