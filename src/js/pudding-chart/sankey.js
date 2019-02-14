@@ -9,21 +9,19 @@
 
 d3.selection.prototype.puddingChartSankey = function init() {
 	function createChart(el) {
-		const DEFAULT_WIDTH = 4;
+		const DEFAULT_WIDTH = 2;
 		const MIN_FONT_SIZE = 12;
 		const MAX_FONT_SIZE = 24;
 		const MARGIN = MAX_FONT_SIZE * 2;
 
 		const scaleFont = d3.scaleLinear().range([MIN_FONT_SIZE, MAX_FONT_SIZE]);
+		const scaleColor = d3.scaleSequential().interpolator(d3.interpolateWarm);
 
 		const $sel = d3.select(el);
 		let data = $sel.datum();
 
 		let width = 0;
 		let height = 0;
-
-		const charW = 0;
-		const charH = 0;
 
 		let guessDepth = 0;
 		let shouldReveal = false;
@@ -33,6 +31,56 @@ d3.selection.prototype.puddingChartSankey = function init() {
 		let $svg = null;
 		let $links = null;
 		let $nodes = null;
+
+		// helper functions
+		function stack(x) {
+			const xobj = {};
+			const sum = d3.sum(x.children, d => d.h);
+			x.children.forEach(d => (xobj[d.data.char] = d.h / sum));
+			return d3.stack().keys(Object.keys(xobj))([xobj]);
+		}
+
+		function customPoints(pts) {
+			const link = d3
+				.linkHorizontal()
+				.source(v => v[0])
+				.target(v => v[1])
+				.x(v => v[0])
+				.y(v => v[1]);
+			return [
+				link([pts[0], pts[1]]),
+				`${pts[1]},${pts[2]}`,
+				link([pts[2], pts[3]]).slice(1)
+			].join('L');
+		}
+
+		function customLine(d) {
+			return d3.line()([
+				[
+					d.node.y0 * width + DEFAULT_WIDTH,
+					d.node.x0 * height +
+						((d.node.x1 - d.node.x0) * height - d.node.h) / 2 +
+						d[0][0] * d.node.h
+				],
+				[
+					d.child.y0 * width,
+					d.child.x0 * height +
+						((d.child.x1 - d.child.x0) * height - d.child.h) / 2
+				],
+				[
+					d.child.y0 * width,
+					d.child.x0 * height +
+						((d.child.x1 - d.child.x0) * height - d.child.h) / 2 +
+						d.child.h
+				],
+				[
+					d.node.y0 * width + DEFAULT_WIDTH,
+					d.node.x0 * height +
+						((d.node.x1 - d.node.x0) * height - d.node.h) / 2 +
+						d[0][1] * d.node.h
+				]
+			]);
+		}
 
 		const Chart = {
 			// called once at start
@@ -63,7 +111,7 @@ d3.selection.prototype.puddingChartSankey = function init() {
 
 			render() {
 				const h = height * 0.67;
-				const w = 2;
+				const w = DEFAULT_WIDTH;
 				const linkWidth = Math.floor(width / correctName.length);
 
 				d3
@@ -95,8 +143,9 @@ d3.selection.prototype.puddingChartSankey = function init() {
 
 					// $n.attr('class', d => `node node--${d.values ? 'internal' : 'leaf'}`);
 
-					$n.append('rect').attr('width', w);
-					// .style('fill', d => color(d.depth - 1));
+					$n.append('rect')
+						.attr('width', w)
+						.style('fill', d => scaleColor(d.depth - 1));
 
 					$n.call(createText, 'bg');
 					$n.call(createText, 'fg');
@@ -104,15 +153,18 @@ d3.selection.prototype.puddingChartSankey = function init() {
 					return $n;
 				};
 
-				const $node = $svg
-					.select('g.nodes')
+				const $node = $nodes
 					.selectAll('g.node')
-					.data(data.descendants())
+					.data(data.descendants(), d => d.data.id)
 					.join(enterNode)
 					.attr(
 						'transform',
 						d => `translate(${d.y0 * width}, ${d.x0 * height})`
-					);
+					)
+					.classed('is-correct', d => d.data.correct)
+					.classed('is-guess', d => d.data.guess)
+					.classed('is-hidden', d => d.depth > guessDepth)
+					.classed('is-reveal', shouldReveal);
 
 				$node
 					.selectAll('text')
@@ -124,67 +176,46 @@ d3.selection.prototype.puddingChartSankey = function init() {
 					.attr('y', d => ((d.x1 - d.x0) * height - d.h) / 2)
 					.attr('height', d => d.h);
 
-				// function stack(x) {
-				// 	const xobj = {};
-				// 	const sum = d3.sum(x.children, d => d.h);
-				// 	x.children.forEach(d => (xobj[d.data.char] = d.h / sum));
-				// 	return d3.stack().keys(Object.keys(xobj))([xobj]);
-				// }
+				// node = d
+				const stackData = [];
+				$node.each(node => {
+					if (!node.children) return false;
+					const st = stack(node);
 
-				// function customLine(pts) {
-				// 	const link = d3
-				// 		.linkHorizontal()
-				// 		.source(v => v[0])
-				// 		.target(v => v[1])
-				// 		.x(v => v[0])
-				// 		.y(v => v[1]);
-				// 	return [
-				// 		link([pts[0], pts[1]]),
-				// 		pts[1] + ',' + pts[2],
-				// 		link([pts[2], pts[3]]).slice(1)
-				// 	].join('L');
-				// }
-
-				// // node = d
-				// nodes.each(node => {
-				// 	if (!node.children) return false;
-				// 	const st = stack(node);
+					st.forEach((s, i) => {
+						stackData.push({
+							...s,
+							node,
+							child: node.children[i]
+						});
+					});
+				});
+				console.log(stackData);
+				$links
+					.selectAll('.link')
+					.data(stackData, d => d.child.id)
+					.join('path')
+					.attr('class', 'link')
+					.style('fill', d => scaleColor(d.child.depth))
+					.classed('is-hidden', d => d.node.depth > guessDepth)
+					.classed('is-correct', d => d.child.data.correct)
+					.classed('is-guess', d => d.child.data.guess)
+					.classed('is-reveal', shouldReveal)
+					.attr('d', customLine);
 
 				// 	st.forEach((d, i) => {
 				// 		const child = node.children[i];
-				// 		const link = svg
-				// 			.select('g.links')
-				// 			.append('path')
-				// 			.attr('class', 'link');
+				// 		const $link = $links.append('path').attr('class', 'link');
 
 				// 		// customLine
-				// 		const path = d3.line()([
-				// 			[
-				// 				node.y0 * width + nodeWidth,
-				// 				node.x0 * height +
-				// 				((node.x1 - node.x0) * height - node.h) / 2 +
-				// 				d[0][0] * node.h
-				// 			],
-				// 			[
-				// 				child.y0 * width,
-				// 				child.x0 * height + ((child.x1 - child.x0) * height - child.h) / 2
-				// 			],
-				// 			[
-				// 				child.y0 * width,
-				// 				child.x0 * height +
-				// 				((child.x1 - child.x0) * height - child.h) / 2 +
-				// 				child.h
-				// 			],
-				// 			[
-				// 				node.y0 * width + nodeWidth,
-				// 				node.x0 * height +
-				// 				((node.x1 - node.x0) * height - node.h) / 2 +
-				// 				d[0][1] * node.h
-				// 			]
-				// 			//[node.y0 * width + nodeWidth, ((node.x0 * height) + ((node.x1-node.x0)*height-node.h)/2 )]
-				// 		]);
 
-				// 		link.attr('d', path).style('fill', color(child.depth));
+				// 		$link
+				// 			.attr('d', path)
+				// 			.style('fill', scaleColor(child.depth))
+				// 			.classed('is-hidden', child.depth > guessDepth)
+				// 			.classed('is-correct', child.data.correct)
+				// 			.classed('is-guess', child.data.guess)
+				// 			.classed('is-reveal', shouldReveal);
 				// 	});
 				// });
 
@@ -213,6 +244,7 @@ d3.selection.prototype.puddingChartSankey = function init() {
 			correct(val) {
 				if (!arguments.length) return correctName;
 				correctName = val;
+				scaleColor.domain([correctName.length, 0]);
 				return Chart;
 			}
 		};

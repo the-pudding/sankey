@@ -17,7 +17,7 @@ svg.pudding-chart
 		&.is-guess
 			opacity 1
 			text
-				fill magenta
+				fill $fg
 
 		&.is-reveal
 			opacity 1
@@ -26,7 +26,7 @@ svg.pudding-chart
 					fill green
 			&.is-guess
 				text
-					fill magenta
+					fill $fg
 
 		
 				
@@ -35,25 +35,28 @@ svg.pudding-chart
 			font-weight bold
 			text-transform uppercase
 			opacity 0.5
+
 		.text--bg
 			fill none
 			stroke-width 3px
 			stroke $bg
+		
+		.text--fg
+			fill $fg
 
 	.link
-		fill none
-		stroke lightgray
-		stroke-opacity 1
+		stroke none
+		fill-opacity 1
 		opacity 0.5
 		&.is-hidden
 			opacity 0
 		&.is-guess
 			opacity 1
-			stroke violet
+			fill black
 		&.is-reveal
 			opacity 1
 			&.is-correct
-				stroke lightgreen
+				fill black
 	
 button
 	padding 1rem

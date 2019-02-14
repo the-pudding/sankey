@@ -53,7 +53,8 @@ function handleInputChange() {
 	else versionsClone.push({ name: guess, count: 1 });
 
 	const total = d3.sum(versionsClone, d => d.count);
-	const [treeData] = generateTreeData({
+
+	const sankeyData = generateSankeyData({
 		data: versionsClone,
 		guess,
 		correct: id,
@@ -61,10 +62,23 @@ function handleInputChange() {
 	});
 
 	quizChart
-		.data(treeData)
+		.data(sankeyData)
 		.guess(guess.length - 1)
 		.resize()
 		.render(true);
+
+	// 	const [treeData] = generateTreeData({
+	// 		data: versionsClone,
+	// 		guess,
+	// 		correct: id,
+	// 		total
+	// 	});
+
+	// 	quizChart
+	// 		.data(treeData)
+	// 		.guess(guess.length - 1)
+	// 		.resize()
+	// 		.render(true);
 }
 
 function handleResponseClick() {
@@ -188,13 +202,6 @@ function showQuestion(id) {
 	const $question = createQuestion(datum);
 
 	const total = d3.sum(datum.versions, d => d.count);
-
-	// const [treeData] = generateTreeData({
-	// 	data: datum.versions,
-	// 	guess: id.charAt(0),
-	// 	correct: datum.id,
-	// 	total
-	// });
 
 	const sankeyData = generateSankeyData({
 		data: datum.versions,
