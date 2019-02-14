@@ -30,6 +30,7 @@ export default function generateSankeyData({
 		char: d.key.charAt(d.key.length - 1),
 		correct: d.key === correct.substring(0, d.key.length),
 		guess: d.key === guess.substring(0, d.key.length),
+		count: d3.format(',')(d3.sum(d.values, v => v.count)),
 		percent: d3.sum(d.values, v => v.count) / total
 	}));
 

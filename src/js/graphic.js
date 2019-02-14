@@ -44,8 +44,10 @@ function handleInputChange() {
 	const $input = d3.select(this);
 	const val = this.value.toLowerCase();
 	const start = $input.attr('data-start');
-	const guess = val.length && val.charAt(0) === start ? val : start;
+	let guess = val.length && val.charAt(0) === start ? val : start;
 	this.value = guess;
+
+	guess = ` ${guess}`;
 
 	const { id, versions } = $input.datum();
 	const versionsClone = versions.map(d => ({ ...d }));
@@ -202,7 +204,10 @@ function createQuestion(d) {
 function showQuestion(id) {
 	const datum = {
 		...PEOPLE.find(d => d.id === id),
-		versions: [...allData[id], { name: id.charAt(0), count: 1, countScaled: 1 }]
+		versions: [
+			...allData[id],
+			{ name: ` ${id.charAt(0)}`, count: 1, countScaled: 1 }
+		]
 	};
 
 	const $question = createQuestion(datum);
@@ -291,7 +296,7 @@ function cleanAllData(data) {
 		allData[i] = person.map(d => ({
 			...d,
 			countScaled: scaleCount(d.count),
-			name: `${d.name} `
+			name: ` ${d.name}`
 		}));
 	}
 }
@@ -302,7 +307,6 @@ function init() {
 	)
 		.then(response => {
 			cleanAllData(response.data);
-			console.log(allData);
 			$nav.classed('is-visible', true);
 			$nav.select('.btn--new').on('click', handleNewClick);
 			$nav.select('.btn--all').on('click', handleAllClick);

@@ -42,18 +42,20 @@ svg.pudding-chart
 		
 		&.is-guess
 			opacity 1
-			text
+			.text-letter
 				fill $black
 
 		&.is-reveal
 			opacity 1
 			&.is-correct
-				text
+				.text-letter
 					fill $black
 			&.is-guess
-				text
+				.text-letter
 					fill $black
 
+		&.is-empty
+			display none
 		
 		rect
 			opacity 1
@@ -72,6 +74,11 @@ svg.pudding-chart
 		
 		.text--fg
 			fill $fg
+
+		.text-count
+			set-type-size(small)
+			&.text--bg
+				stroke-width 2px
 
 	.link
 		stroke none
