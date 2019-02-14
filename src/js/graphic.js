@@ -23,14 +23,14 @@ const SVG_VOLUME =
 const $audio = d3.select('audio');
 const $quiz = d3.select('#quiz');
 const $quizContent = $quiz.select('.quiz__content');
-const $tutorialContent = $quiz.select('.tutorial__content');
+const $tutorialContent = d3.select('.tutorial__content');
 const $nav = $quiz.select('.quiz__nav');
 const $all = d3.select('#all');
 
 const width = 0;
 const height = 0;
-let maxDepth = 0;
 
+let tutorialChart = null;
 let quizChart = null;
 let allCharts = [];
 
@@ -129,7 +129,7 @@ function handleAllClick() {
 
 		const chart = $figure
 			.datum(treeData)
-			.puddingChartTree({ maxDepth })
+			.puddingChartTree()
 			.reveal(true)
 			.resize()
 			.render();
@@ -224,7 +224,7 @@ function showQuestion(id) {
 		total
 	});
 
-	quizChart = d3
+	quizChart = $quizContent
 		.select('figure')
 		.datum(sankeyData)
 		.puddingChartSankey()
@@ -239,11 +239,52 @@ function showQuestion(id) {
 		.on('click', handleResponseClick);
 }
 
-function setMaxDepth() {
-	maxDepth = d3.max(Object.keys(allData), d => {
-		const { treeW, treeH } = getTreeSize(allData[d]);
-		return Math.max(treeW, treeH);
+function stepTutorial({ id, depth = 1, reveal }) {
+	const total = d3.sum(allData[id], d => d.count_scaled);
+
+	const sankeyData = generateSankeyData({
+		data: allData[id],
+		correct: id,
+		guess: id.substring(0, depth),
+		total
 	});
+
+	tutorialChart
+		.data(sankeyData)
+		.guess(depth - 1)
+		.reveal(reveal)
+		.resize()
+		.render(true);
+
+	d3.timeout(
+		() => {
+			const next = depth + 1;
+			const shouldReveal = next >= id.length;
+			const nextDepth = next > id.length ? 0 : depth + 1;
+			stepTutorial({ id, depth: nextDepth, reveal: shouldReveal });
+		},
+		depth >= id.length ? 2000 : 500
+	);
+}
+
+function showTutorial(id) {
+	const total = d3.sum(allData[id], d => d.count_scaled);
+
+	const sankeyData = generateSankeyData({
+		data: allData[id],
+		correct: id,
+		total
+	});
+
+	tutorialChart = $tutorialContent
+		.select('figure')
+		.datum(sankeyData)
+		.puddingChartSankey()
+		.correct(id)
+		.resize()
+		.render();
+
+	stepTutorial({ id });
 }
 
 function init() {
@@ -253,17 +294,16 @@ function init() {
 		.then(response => {
 			allData = response.data;
 			allData.britney = TUTORIAL_DATA;
-			setMaxDepth();
-			// const person = Math.random() < 0.5 ? 'russell' : 'britney';
-			showQuestion('britney');
 			$nav.classed('is-visible', true);
 			$nav.select('.btn--new').on('click', handleNewClick);
 			$nav.select('.btn--all').on('click', handleAllClick);
 			d3.select('.btn--skip')
 				.node()
 				.addEventListener('click', handleSkipClick);
+			showTutorial('britney');
 		})
 		.catch(console.error);
+
 	// db.setup();
 	// console.log(db.getGuess());
 

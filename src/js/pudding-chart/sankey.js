@@ -99,7 +99,7 @@ d3.selection.prototype.puddingChartSankey = function init() {
 			resize() {
 				const w = $sel.node().offsetWidth;
 				// TODO do height minus elements (input + buttons)
-				const h = window.innerHeight * 0.75;
+				const h = Math.min(window.innerHeight * 0.75, 480);
 
 				linkWidth = Math.floor((w - MARGIN * 2) / MAX_CHARS);
 

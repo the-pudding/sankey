@@ -1,7 +1,7 @@
 export default function generateSankeyData({
 	data,
 	correct,
-	guess,
+	guess = '',
 	total = 1
 }) {
 	correct = `${correct} `;
