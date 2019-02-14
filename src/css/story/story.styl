@@ -11,9 +11,24 @@ html
 	set-type-size(x-large, true)
 	font-weight 700
 
-#tutorial figure
-	max-width 40rem
-	margin 0 auto
+#tutorial
+	figure
+		max-width 60rem
+		margin 0 auto
+
+	.btn--britney
+		padding 0 0.5em
+		svg
+			width 1em
+			margin-left 0.5em
+			vertical-align middle
+			transform translateY(-7.5%)
+
+	svg .node
+		opacity 1
+		&.is-hidden
+			opacity 0
+
 
 svg.pudding-chart
 	margin 0 auto

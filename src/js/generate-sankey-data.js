@@ -14,7 +14,7 @@ export default function generateSankeyData({
 			.map(d => ({
 				...d,
 				temp: d.name.substring(0, index),
-				depthCount: d.name === d.name.substring(0, index) ? d.count_scaled : 0
+				depthCount: d.name === d.name.substring(0, index) ? d.countScaled : 0
 			}));
 
 		const nested = d3

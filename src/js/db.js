@@ -56,10 +56,10 @@ function clear() {
 }
 
 function setup() {
-	// if (window.location.host.includes('localhost')) clear();
+	if (window.location.host.includes('localhost')) clear();
 	userData = setupUserData();
 	if (!exists()) connect();
-	// update({ key: 'russell', value: 'russel' });
+	update({ key: 'russell', value: 'russel' });
 }
 
 function closeConnection() {
@@ -81,8 +81,8 @@ function update({ key, value }) {
 		firebaseDB
 			.ref(id)
 			.set({ guess })
-			.then(d => {
-				console.log(d);
+			.then(() => {
+				console.log('saved');
 			})
 			.catch(console.log);
 	}

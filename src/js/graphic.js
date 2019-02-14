@@ -6,21 +6,13 @@ import generateSankeyData from './generate-sankey-data';
 import britneyData from './britney';
 import PEOPLE from './people';
 
-// const scaleCount = d3.scaleLog().domain([1, britneyData[0].count]);
-const scaleCount = d3.scaleSqrt().domain([1, britneyData[0].count]);
-const TUTORIAL_DATA = britneyData
-	.filter(d => d.count > 1000)
-	.slice(0, 10)
-	.map(d => ({
-		...d,
-		name: `${d.name} `,
-		count_scaled: scaleCount(d.count)
-	}));
+const TUTORIAL_DATA = britneyData.filter(d => d.count > 1000).slice(0, 10);
 
 const SVG_VOLUME =
 	'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-volume-2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>';
 
-const $audio = d3.select('audio');
+const $audioTutorial = d3.select('.audio--tutorial');
+const $audioQuiz = d3.select('audio--quiz');
 const $quiz = d3.select('#quiz');
 const $quizContent = $quiz.select('.quiz__content');
 const $tutorialContent = d3.select('.tutorial__content');
@@ -60,10 +52,9 @@ function handleInputChange() {
 
 	const match = versionsClone.find(d => d.name === guess);
 	if (match) match.count += 1;
-	else
-		versionsClone.push({ name: guess, count: 1, count_scaled: scaleCount(1) });
+	else versionsClone.push({ name: guess, count: 1, countScaled: 1 });
 
-	const total = d3.sum(versionsClone, d => d.count_scaled);
+	const total = d3.sum(versionsClone, d => d.countScaled);
 
 	const sankeyData = generateSankeyData({
 		data: versionsClone,
@@ -100,7 +91,11 @@ function handleResponseClick() {
 }
 
 function handlePersonClick() {
-	$audio.node().play();
+	$audioQuiz.node().play();
+}
+
+function handleBritneyClick() {
+	$audioTutorial.node().play();
 }
 
 function handleNewClick() {
@@ -187,7 +182,7 @@ function createQuestion(d) {
 	const start = d.pos === 0 ? first.charAt(0) : last.charAt(0);
 	$response
 		.append('input')
-		.attr('maxlength', 14)
+		.attr('maxlength', d.id.length + 1)
 		.attr('spellcheck', false)
 		.attr('data-start', start)
 		.attr('value', start);
@@ -200,22 +195,19 @@ function createQuestion(d) {
 	$question.append('figure').attr('class', 'question__figure');
 
 	// AUDIO
-	$audio.attr('src', `assets/audio/${d.id}.mp3`);
+	$audioQuiz.attr('src', `assets/audio/${d.id}.mp3`);
 	return $question;
 }
 
 function showQuestion(id) {
 	const datum = {
 		...PEOPLE.find(d => d.id === id),
-		versions: [
-			...allData[id],
-			{ name: id.charAt(0), count: 1, count_scaled: scaleCount(1) }
-		]
+		versions: [...allData[id], { name: id.charAt(0), count: 1, countScaled: 1 }]
 	};
 
 	const $question = createQuestion(datum);
 
-	const total = d3.sum(datum.versions, d => d.count_scaled);
+	const total = d3.sum(datum.versions, d => d.countScaled);
 
 	const sankeyData = generateSankeyData({
 		data: datum.versions,
@@ -239,8 +231,8 @@ function showQuestion(id) {
 		.on('click', handleResponseClick);
 }
 
-function stepTutorial({ id, depth = 1, reveal }) {
-	const total = d3.sum(allData[id], d => d.count_scaled);
+function stepTutorial({ id, depth = 1 }) {
+	const total = d3.sum(allData[id], d => d.countScaled);
 
 	const sankeyData = generateSankeyData({
 		data: allData[id],
@@ -252,23 +244,21 @@ function stepTutorial({ id, depth = 1, reveal }) {
 	tutorialChart
 		.data(sankeyData)
 		.guess(depth - 1)
-		.reveal(reveal)
 		.resize()
 		.render(true);
 
 	d3.timeout(
 		() => {
 			const next = depth + 1;
-			const shouldReveal = next >= id.length;
-			const nextDepth = next > id.length ? 0 : depth + 1;
-			stepTutorial({ id, depth: nextDepth, reveal: shouldReveal });
+			const nextDepth = next > id.length + 1 ? 1 : depth + 1;
+			stepTutorial({ id, depth: nextDepth });
 		},
-		depth >= id.length ? 2000 : 500
+		depth > id.length ? 3000 : 200 + depth * 200
 	);
 }
 
 function showTutorial(id) {
-	const total = d3.sum(allData[id], d => d.count_scaled);
+	const total = d3.sum(allData[id], d => d.countScaled);
 
 	const sankeyData = generateSankeyData({
 		data: allData[id],
@@ -287,20 +277,46 @@ function showTutorial(id) {
 	stepTutorial({ id });
 }
 
+function cleanAllData(data) {
+	allData = data;
+	allData.britney = TUTORIAL_DATA;
+	for (const i in allData) {
+		// const scaleCount = d3.scaleLog().domain([1, britneyData[0].count]);
+		const person = allData[i];
+		const max = d3.max(person, p => p.count);
+		const scaleCount = d3
+			.scaleSqrt()
+			.domain([1, max])
+			.range([1, 10]);
+		allData[i] = person.map(d => ({
+			...d,
+			countScaled: scaleCount(d.count),
+			name: `${d.name} `
+		}));
+	}
+}
+
 function init() {
 	d3.json(
 		`https://pudding.cool/2019/02/sankey-data/data.json?version=${Date.now()}`
 	)
 		.then(response => {
-			allData = response.data;
-			allData.britney = TUTORIAL_DATA;
+			cleanAllData(response.data);
+			console.log(allData);
 			$nav.classed('is-visible', true);
 			$nav.select('.btn--new').on('click', handleNewClick);
 			$nav.select('.btn--all').on('click', handleAllClick);
 			d3.select('.btn--skip')
 				.node()
 				.addEventListener('click', handleSkipClick);
+
+			d3.select('.btn--britney')
+				.on('click', handleBritneyClick)
+				.append('span')
+				.html(SVG_VOLUME);
+
 			showTutorial('britney');
+			showQuestion('russell');
 		})
 		.catch(console.error);
 
