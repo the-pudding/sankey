@@ -35,31 +35,42 @@ svg.pudding-chart
 	display block
 	user-select none
 	.node
-		opacity 0
-		
-		&.is-hidden
-			opacity 0
-		
+		opacity 1
+
 		&.is-guess
 			opacity 1
-			.text-letter
-				fill $black
+
+		&.is-hidden
+			opacity 0
 
 		&.is-reveal
 			opacity 1
-			&.is-correct
-				.text-letter
-					fill $black
-			&.is-guess
-				.text-letter
-					fill $black
+			// &.is-correct
+			// &.is-guess
 
 		&.is-empty
 			display none
 		
 		rect
 			opacity 1
-				
+
+	.letter
+		opacity 0
+
+		&.is-guess
+			opacity 1
+
+		&.is-hidden
+			opacity 0
+
+		&.is-reveal
+			opacity 1
+
+			// &.is-correct
+			// &.is-guess
+		&.is-empty
+			display none
+
 		text
 			font-family $sans
 			font-weight bold
@@ -77,6 +88,7 @@ svg.pudding-chart
 
 		.text-count
 			set-type-size(small)
+			opacity 0
 			&.text--bg
 				stroke-width 2px
 
@@ -84,14 +96,18 @@ svg.pudding-chart
 		stroke none
 		fill-opacity 1
 		opacity 0.33
-		&.is-hidden
-			opacity 0
+		
 		&.is-guess
 			opacity 0.85
+		
+		&.is-hidden
+			opacity 0
+
 		&.is-reveal
 			opacity 0.85
+		
 			&.is-correct
-				// 
+				opacity 1
 	
 button
 	padding 1rem

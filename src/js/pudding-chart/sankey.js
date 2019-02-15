@@ -1,3 +1,5 @@
+// https://bl.ocks.org/timelyportfolio/a6f2f931935025b0476ea6180d348c59
+
 /*
  USAGE (example: line chart)
  1. c+p this template to a new file (line.js)
@@ -12,7 +14,7 @@ d3.selection.prototype.puddingChartSankey = function init() {
 		const DEFAULT_WIDTH = 2;
 		const MIN_FONT_SIZE = 14;
 		const MARGIN = MIN_FONT_SIZE;
-		const MAX_CHARS = 14;
+		const MAX_CHARS = 'Antetokounmpo'.length + 2;
 
 		const scaleFont = d3.scaleLinear();
 		const scaleColor = d3.scaleSequential().interpolator(d3.interpolateWarm);
@@ -26,14 +28,16 @@ d3.selection.prototype.puddingChartSankey = function init() {
 		let nameWidth = 0;
 		let maxFontSize = 0;
 
-		let guessDepth = 1;
+		let guessDepth = 0;
 		let shouldReveal = false;
+		let shouldTutorial = false;
 		let correctName = '';
 
 		// dom elements
 		let $svg = null;
 		let $links = null;
 		let $nodes = null;
+		let $letters = null;
 
 		// helper functions
 		function stack(x) {
@@ -94,6 +98,7 @@ d3.selection.prototype.puddingChartSankey = function init() {
 				// setup viz group
 				$links = $g.append('g').attr('class', 'g-links');
 				$nodes = $g.append('g').attr('class', 'g-nodes');
+				$letters = $g.append('g').attr('class', 'g-letters');
 			},
 			// on resize, update new dimensions
 			resize() {
@@ -110,12 +115,17 @@ d3.selection.prototype.puddingChartSankey = function init() {
 
 				width = w - MARGIN * 2;
 				height = h - MARGIN * 2;
-				nameWidth = linkWidth * correctName.length + 1;
+				const len = correctName.length + 1; // remove space
+				const count = Math.max(guessDepth + 1, len);
+				nameWidth = linkWidth * count;
+				const offsetWidth = linkWidth * len;
+				// nameWidth -= DEFAULT_WIDTH * count;
+				// console.log({ len, guessDepth, nameWidth });
 
 				$svg.attr('width', width + MARGIN).attr('height', height + MARGIN * 2);
 
 				// center
-				const offsetX = nameWidth / 2;
+				const offsetX = (width - offsetWidth) / 2 + linkWidth / 2;
 				$svg
 					.select('g')
 					.attr('transform', `translate(${MARGIN + offsetX}, ${MARGIN})`);
@@ -124,7 +134,7 @@ d3.selection.prototype.puddingChartSankey = function init() {
 			},
 
 			render() {
-				console.log(guessDepth);
+				// console.log({ guessDepth });
 				const h = height * 0.67;
 				const w = DEFAULT_WIDTH;
 
@@ -143,58 +153,32 @@ d3.selection.prototype.puddingChartSankey = function init() {
 
 				d3.partition()(data);
 
-				const createText = ($n, { name, mod }) => {
-					$n.append('text')
-						.attr('alignment-baseline', 'middle')
-						.attr('text-anchor', 'middle')
-						.attr('class', `text-${name} text--${mod}`);
-				};
-
 				const enterNode = sel => {
-					const $n = sel.append('g').attr('class', 'node');
-
-					$n.append('rect').attr('width', w);
-
-					const $t = $n.append('g').attr('class', 'node-text');
-
-					$t.call(createText, { name: 'letter', mod: 'bg' });
-					$t.call(createText, { name: 'letter', mod: 'fg' });
-					$t.call(createText, { name: 'count', mod: 'bg' });
-					$t.call(createText, { name: 'count', mod: 'fg' });
-
-					return $n;
+					const $el = sel.append('g').attr('class', 'node');
+					$el.append('rect').attr('width', w);
+					return $el;
 				};
+
+				const desc = data.descendants();
 
 				const $node = $nodes
 					.selectAll('g.node')
-					.data(data.descendants(), d => d.data.id)
+					.data(desc, d => d.data.id)
 					.join(enterNode)
 					.attr(
 						'transform',
 						d => `translate(${d.y0 * nameWidth}, ${d.x0 * height})`
 					)
+					.attr('data-depth', d => d.depth)
 					.classed('is-correct', d => d.data.correct)
-					.classed('is-guess', d => d.data.guess)
-					.classed('is-hidden', d => d.depth >= guessDepth)
+					.classed('is-hidden', d => d.depth > guessDepth)
 					.classed('is-reveal', shouldReveal)
-					.classed('is-empty', (d, i) => i === 0);
+					.classed('is-empty', (d, i) => d.depth === correctName.length);
 
-				$node.select('.node-text').attr('transform', d => {
-					const off = (d.y0 - d.y1) * nameWidth;
-					return `translate(${off},0)`;
-				});
-				$node
-					.selectAll('.text-letter')
-					.attr('y', d => ((d.x1 - d.x0) * height - d.h) / 2 + d.h * 0.5)
-					.attr('x', d => linkWidth / 2 - 4)
-					.style('font-size', d => `${scaleFont(d.value)}px`)
-					.text(d => d.data.char);
-
-				$node
-					.selectAll('.text-count')
-					.attr('y', d => ((d.x1 - d.x0) * height - d.h) / 2 + d.h)
-					.attr('x', d => linkWidth / 2 - 4)
-					.text(d => d.data.count);
+				// $node.select('.node-text').attr('transform', d => {
+				// 	const off = ((d.y0 - d.y1) * nameWidth) / 2;
+				// 	return `translate(${off},0)`;
+				// });
 
 				$node
 					.select('rect')
@@ -214,6 +198,7 @@ d3.selection.prototype.puddingChartSankey = function init() {
 							child: node.children[i]
 						});
 					});
+					return false;
 				});
 
 				$links
@@ -223,11 +208,78 @@ d3.selection.prototype.puddingChartSankey = function init() {
 					.attr('class', 'link')
 					.attr('data-depth', d => d.node.depth)
 					.style('fill', d => scaleColor(d.child.depth))
-					.classed('is-hidden', d => d.node.depth + 1 > guessDepth)
-					.classed('is-guess', d => d.node.data.guess)
+					.classed('is-hidden', d => d.node.depth > guessDepth)
+					.classed('is-guess', d => d.child.data.guess || shouldTutorial)
 					.classed('is-correct', d => d.child.data.correct)
 					.classed('is-reveal', shouldReveal)
 					.attr('d', customLine);
+
+				const createText = ($el, { name, mod }) => {
+					$el
+						.append('text')
+						.attr('alignment-baseline', 'middle')
+						.attr('text-anchor', 'middle')
+						.attr('class', `text-${name} text--${mod}`);
+				};
+
+				function enterLetter(sel) {
+					const $el = sel.append('g').attr('class', 'letter');
+					$el.call(createText, { name: 'letter', mod: 'bg' });
+					$el.call(createText, { name: 'letter', mod: 'fg' });
+					$el.call(createText, { name: 'count', mod: 'bg' });
+					$el.call(createText, { name: 'count', mod: 'fg' });
+					return $el;
+				}
+
+				// console.log(stackData);
+				const $letter = $letters
+					.selectAll('.letter')
+					.data(stackData, d => d.child.id)
+					.join(enterLetter)
+					.attr('transform', d => `translate(${d.node.y0 * nameWidth}, 0)`)
+					.attr('data-char', d => d.child.data.char)
+					.attr('data-depth', d => d.child.depth)
+					.attr('data-depth', d => d.node.depth)
+					.classed('is-hidden', d => d.node.depth > guessDepth)
+					.classed('is-guess', d => d.child.data.guess || shouldTutorial)
+					.classed('is-correct', d => d.child.data.correct)
+					.classed('is-reveal', shouldReveal);
+
+				$letter
+					.selectAll('.text-letter')
+					.attr('y', d => {
+						const tL =
+							d.node.x0 * height +
+							((d.node.x1 - d.node.x0) * height - d.node.h) / 2 +
+							d[0][0] * d.node.h;
+
+						const bL =
+							d.node.x0 * height +
+							((d.node.x1 - d.node.x0) * height - d.node.h) / 2 +
+							d[0][1] * d.node.h;
+
+						const tR =
+							d.child.x0 * height +
+							((d.child.x1 - d.child.x0) * height - d.child.h) / 2;
+
+						const bR =
+							d.child.x0 * height +
+							((d.child.x1 - d.child.x0) * height - d.child.h) / 2 +
+							d.child.h;
+
+						const midPosChild = (bR - tR) / 2;
+						const delta = (tR - tL) / 2;
+						return tL + midPosChild + delta;
+					})
+					.attr('x', linkWidth / 2 - DEFAULT_WIDTH * 2)
+					.style('font-size', d => `${scaleFont(d.child.value)}px`)
+					.text(d => d.child.data.char);
+
+				// $letter
+				// 	.selectAll('.text-count')
+				// 	// .attr('y', d => ((d.x1 - d.x0) * height - d.h) / 2 + d.h)
+				// 	// .attr('x', d => linkWidth / 2 - 4)
+				// 	.text(d => d.node.data.count);
 
 				return Chart;
 			},
@@ -241,7 +293,8 @@ d3.selection.prototype.puddingChartSankey = function init() {
 
 			guess(val) {
 				if (!arguments.length) return guessDepth;
-				guessDepth = val;
+				guessDepth = val - 1;
+				Chart.resize();
 				return Chart;
 			},
 
@@ -251,9 +304,15 @@ d3.selection.prototype.puddingChartSankey = function init() {
 				return Chart;
 			},
 
+			tutorial(val) {
+				if (!arguments.length) return shouldTutorial;
+				shouldTutorial = val;
+				return Chart;
+			},
+
 			correct(val) {
 				if (!arguments.length) return correctName;
-				correctName = val;
+				correctName = ` ${val}`;
 				scaleColor.domain([0, correctName.length]);
 				return Chart;
 			}

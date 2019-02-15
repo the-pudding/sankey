@@ -28,33 +28,21 @@ let allCharts = [];
 
 let allData = {};
 
-function getTreeSize(data) {
-	const [treeData] = generateTreeData({ data });
-
-	const root = d3.hierarchy(treeData, d => d.values);
-	root.count();
-	return { treeW: root.height, treeH: root.value };
-}
-
-function resize() {
-	if (quizChart) quizChart.resize();
-}
+function resize() {}
 
 function handleInputChange() {
 	const $input = d3.select(this);
 	const val = this.value.toLowerCase();
 	const start = $input.attr('data-start');
-	let guess = val.length && val.charAt(0) === start ? val : start;
+	const guess = val.length && val.charAt(0) === start ? val : start;
 	this.value = guess;
-
-	guess = ` ${guess}`;
 
 	const { id, versions } = $input.datum();
 	const versionsClone = versions.map(d => ({ ...d }));
 
-	const match = versionsClone.find(d => d.name === guess);
+	const match = versionsClone.find(d => d.name === ` ${guess}`);
 	if (match) match.count += 1;
-	else versionsClone.push({ name: guess, count: 1, countScaled: 1 });
+	else versionsClone.push({ name: ` ${guess}`, count: 1, countScaled: 1 });
 
 	const total = d3.sum(versionsClone, d => d.countScaled);
 
@@ -67,7 +55,7 @@ function handleInputChange() {
 
 	quizChart
 		.data(sankeyData)
-		.guess(guess.length - 1)
+		.guess(guess.length)
 		.resize()
 		.render(true);
 
@@ -184,7 +172,7 @@ function createQuestion(d) {
 	const start = d.pos === 0 ? first.charAt(0) : last.charAt(0);
 	$response
 		.append('input')
-		.attr('maxlength', d.id.length + 1)
+		.attr('maxlength', d.id.length + 2)
 		.attr('spellcheck', false)
 		.attr('data-start', start)
 		.attr('value', start);
@@ -248,7 +236,7 @@ function stepTutorial({ id, depth = 1 }) {
 
 	tutorialChart
 		.data(sankeyData)
-		.guess(depth - 1)
+		.guess(depth)
 		.resize()
 		.render(true);
 
@@ -276,6 +264,7 @@ function showTutorial(id) {
 		.datum(sankeyData)
 		.puddingChartSankey()
 		.correct(id)
+		.tutorial(true)
 		.resize()
 		.render();
 
@@ -292,7 +281,7 @@ function cleanAllData(data) {
 		const scaleCount = d3
 			.scaleSqrt()
 			.domain([1, max])
-			.range([1, 10]);
+			.range([2, 10]);
 		allData[i] = person.map(d => ({
 			...d,
 			countScaled: scaleCount(d.count),
