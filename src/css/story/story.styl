@@ -3,7 +3,7 @@ html
 	scroll-behavior smooth
 
 .prose p
-	set-type-size(large, true)
+	set-type-size(medium, true)
 
 .prose__hed
 	margin 0
@@ -87,10 +87,12 @@ svg.pudding-chart
 			fill $fg
 
 		.text-count
-			set-type-size(small)
+			set-type-size(x-small)
 			opacity 0
 			&.text--bg
 				stroke-width 2px
+			&.is-visible
+				opacity 1
 
 	.link
 		stroke none

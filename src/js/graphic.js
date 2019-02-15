@@ -44,7 +44,7 @@ function handleInputChange() {
 	if (match) match.count += 1;
 	else versionsClone.push({ name: ` ${guess}`, count: 1, countScaled: 1 });
 
-	const total = d3.sum(versionsClone, d => d.countScaled);
+	const total = d3.sum(versionsClone, d => d.count);
 
 	const sankeyData = generateSankeyData({
 		data: versionsClone,
@@ -99,7 +99,7 @@ function handleAllClick() {
 	allCharts = PEOPLE.map(person => {
 		const { id, fullname } = person;
 
-		const total = d3.sum(allData[id], d => d.count_scale);
+		const total = d3.sum(allData[id], d => d.count);
 
 		const [treeData] = generateTreeData({
 			data: allData[id],
@@ -200,7 +200,7 @@ function showQuestion(id) {
 
 	const $question = createQuestion(datum);
 
-	const total = d3.sum(datum.versions, d => d.countScaled);
+	const total = d3.sum(datum.versions, d => d.count);
 
 	const sankeyData = generateSankeyData({
 		data: datum.versions,
@@ -225,7 +225,7 @@ function showQuestion(id) {
 }
 
 function stepTutorial({ id, depth = 1 }) {
-	const total = d3.sum(allData[id], d => d.countScaled);
+	const total = d3.sum(allData[id], d => d.count);
 
 	const sankeyData = generateSankeyData({
 		data: allData[id],
@@ -251,7 +251,7 @@ function stepTutorial({ id, depth = 1 }) {
 }
 
 function showTutorial(id) {
-	const total = d3.sum(allData[id], d => d.countScaled);
+	const total = d3.sum(allData[id], d => d.count);
 
 	const sankeyData = generateSankeyData({
 		data: allData[id],

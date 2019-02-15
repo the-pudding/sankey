@@ -271,15 +271,41 @@ d3.selection.prototype.puddingChartSankey = function init() {
 						const delta = (tR - tL) / 2;
 						return tL + midPosChild + delta;
 					})
-					.attr('x', linkWidth / 2 - DEFAULT_WIDTH * 2)
+					.attr('x', linkWidth / 2)
 					.style('font-size', d => `${scaleFont(d.child.value)}px`)
 					.text(d => d.child.data.char);
 
-				// $letter
-				// 	.selectAll('.text-count')
-				// 	// .attr('y', d => ((d.x1 - d.x0) * height - d.h) / 2 + d.h)
-				// 	// .attr('x', d => linkWidth / 2 - 4)
-				// 	.text(d => d.node.data.count);
+				$letter
+					.selectAll('.text-count')
+					.attr('y', d => {
+						const tL =
+							d.node.x0 * height +
+							((d.node.x1 - d.node.x0) * height - d.node.h) / 2 +
+							d[0][0] * d.node.h;
+
+						const bL =
+							d.node.x0 * height +
+							((d.node.x1 - d.node.x0) * height - d.node.h) / 2 +
+							d[0][1] * d.node.h;
+
+						const tR =
+							d.child.x0 * height +
+							((d.child.x1 - d.child.x0) * height - d.child.h) / 2;
+
+						const bR =
+							d.child.x0 * height +
+							((d.child.x1 - d.child.x0) * height - d.child.h) / 2 +
+							d.child.h;
+
+						const midPosChild = (bR - tR) / 2;
+						const delta = (tR - tL) / 2;
+						const fs = scaleFont(d.child.value);
+						return tL + midPosChild + delta + fs;
+					})
+					.attr('x', linkWidth / 2)
+					// .text(d => d.child.data.count)
+					.text(d => d3.format('.0%')(d.child.data.percent))
+					.classed('is-visible', d => d.child.data.percent >= 0.2);
 
 				return Chart;
 			},
