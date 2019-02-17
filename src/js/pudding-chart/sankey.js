@@ -115,15 +115,22 @@ d3.selection.prototype.puddingChartSankey = function init() {
 
 				width = w - MARGIN * 2;
 				height = h - MARGIN * 2;
-				const len = correctName.length;
-				const count = Math.max(guessDepth + 2, len);
-				nameWidth = linkWidth * count;
+				const lenCorrect = correctName.length - 1;
+				const lenGuess = guessDepth + 1;
+
+				// nameWidth represents how many chars we want to show on screen
+				// it should be at minium the correct answer
+				const lenMax = d3.max(data.data.values, d => d.name.length) - 1;
+				const count = Math.max(...[lenCorrect, lenGuess, lenMax]);
+
+				nameWidth = linkWidth * (count + 1); // +1 for the empty space at start
 				const offsetWidth = linkWidth * count;
 
 				$svg.attr('width', width + MARGIN).attr('height', height + MARGIN * 2);
 
 				// center
 				const offsetX = (width - offsetWidth) / 2 + linkWidth / 2;
+
 				$svg
 					.select('g')
 					.attr('transform', `translate(${MARGIN + offsetX}, ${MARGIN})`);

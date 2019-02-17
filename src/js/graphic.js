@@ -251,6 +251,7 @@ function showTutorial(id) {
 		.datum(sankeyData)
 		.puddingChartSankey()
 		.correct(id)
+		.guess(1)
 		.tutorial(true)
 		.resize()
 		.render();
