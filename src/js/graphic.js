@@ -58,19 +58,6 @@ function handleInputChange() {
 		.guess(guess.length)
 		.resize()
 		.render(true);
-
-	// 	const [treeData] = generateTreeData({
-	// 		data: versionsClone,
-	// 		guess,
-	// 		correct: id,
-	// 		total
-	// 	});
-
-	// 	quizChart
-	// 		.data(treeData)
-	// 		.guess(guess.length - 1)
-	// 		.resize()
-	// 		.render(true);
 }
 
 function handleResponseClick() {
@@ -101,7 +88,7 @@ function handleAllClick() {
 
 		const total = d3.sum(allData[id], d => d.count);
 
-		const [treeData] = generateTreeData({
+		const sankeyData = generateSankeyData({
 			data: allData[id],
 			correct: id,
 			total
@@ -113,11 +100,11 @@ function handleAllClick() {
 		const $figure = $person.append('figure');
 
 		const chart = $figure
-			.datum(treeData)
-			.puddingChartTree()
-			.reveal(true)
+			.datum(sankeyData)
+			.puddingChartSankey()
 			.resize()
-			.render();
+			.reveal(true)
+			.render(true);
 
 		return chart;
 	});

@@ -34,43 +34,30 @@ svg.pudding-chart
 	margin 0 auto
 	display block
 	user-select none
+	
+	&.show-result
+		// 
+
+	// strip of line
 	.node
-		opacity 1
-
+		display none
+		&.is-visible
+			display block
 		&.is-guess
-			opacity 1
+			// 
+		&.is-correct
+			// 
 
-		&.is-hidden
-			opacity 0
-
-		&.is-reveal
-			opacity 1
-			// &.is-correct
-			// &.is-guess
-
-		&.is-empty
-			display none
-		
-		rect
-			opacity 1
-
+	// the text
 	.letter
-		opacity 0
-
+		display none
+		&.is-visible
+			display block
 		&.is-guess
-			opacity 1
-
-		&.is-hidden
-			opacity 0
-
-		&.is-reveal
-			opacity 1
-
-			// &.is-correct
-			// &.is-guess
-		&.is-empty
-			display none
-
+			//
+		&.is-correct
+			// 
+		
 		text
 			font-family $sans
 			font-weight bold
@@ -94,23 +81,17 @@ svg.pudding-chart
 			&.is-visible
 				opacity 1
 
+	// path between nodes
 	.link
 		stroke none
-		fill-opacity 1
-		opacity 0.33
-		
+		display none
+		&.is-visible
+			display block
 		&.is-guess
-			opacity 0.85
-		
-		&.is-hidden
-			opacity 0
+			// 
+		&.is-correct
+			// 
 
-		&.is-reveal
-			opacity 0.85
-		
-			&.is-correct
-				opacity 1
-	
 button
 	padding 1rem
 	border 1px solid $fg

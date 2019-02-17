@@ -115,12 +115,10 @@ d3.selection.prototype.puddingChartSankey = function init() {
 
 				width = w - MARGIN * 2;
 				height = h - MARGIN * 2;
-				const len = correctName.length + 1; // remove space
-				const count = Math.max(guessDepth + 1, len);
+				const len = correctName.length;
+				const count = Math.max(guessDepth + 2, len);
 				nameWidth = linkWidth * count;
-				const offsetWidth = linkWidth * len;
-				// nameWidth -= DEFAULT_WIDTH * count;
-				// console.log({ len, guessDepth, nameWidth });
+				const offsetWidth = linkWidth * count;
 
 				$svg.attr('width', width + MARGIN).attr('height', height + MARGIN * 2);
 
@@ -134,7 +132,6 @@ d3.selection.prototype.puddingChartSankey = function init() {
 			},
 
 			render() {
-				// console.log({ guessDepth });
 				const h = height * 0.67;
 				const w = DEFAULT_WIDTH;
 
@@ -153,6 +150,8 @@ d3.selection.prototype.puddingChartSankey = function init() {
 
 				d3.partition()(data);
 
+				$svg.classed('show-result', shouldReveal);
+
 				const enterNode = sel => {
 					const $el = sel.append('g').attr('class', 'node');
 					$el.append('rect').attr('width', w);
@@ -169,16 +168,9 @@ d3.selection.prototype.puddingChartSankey = function init() {
 						'transform',
 						d => `translate(${d.y0 * nameWidth}, ${d.x0 * height})`
 					)
-					.attr('data-depth', d => d.depth)
+					.classed('is-guess', d => d.data.guess)
 					.classed('is-correct', d => d.data.correct)
-					.classed('is-hidden', d => d.depth > guessDepth)
-					.classed('is-reveal', shouldReveal)
-					.classed('is-empty', (d, i) => d.depth === correctName.length);
-
-				// $node.select('.node-text').attr('transform', d => {
-				// 	const off = ((d.y0 - d.y1) * nameWidth) / 2;
-				// 	return `translate(${off},0)`;
-				// });
+					.classed('is-visible', d => d.depth <= guessDepth);
 
 				$node
 					.select('rect')
@@ -206,12 +198,10 @@ d3.selection.prototype.puddingChartSankey = function init() {
 					.data(stackData, d => d.child.id)
 					.join('path')
 					.attr('class', 'link')
-					.attr('data-depth', d => d.node.depth)
 					.style('fill', d => scaleColor(d.child.depth))
-					.classed('is-hidden', d => d.node.depth > guessDepth)
-					.classed('is-guess', d => d.child.data.guess || shouldTutorial)
+					.classed('is-guess', d => d.child.data.guess)
 					.classed('is-correct', d => d.child.data.correct)
-					.classed('is-reveal', shouldReveal)
+					.classed('is-visible', d => d.node.depth <= guessDepth)
 					.attr('d', customLine);
 
 				const createText = ($el, { name, mod }) => {
@@ -237,13 +227,9 @@ d3.selection.prototype.puddingChartSankey = function init() {
 					.data(stackData, d => d.child.id)
 					.join(enterLetter)
 					.attr('transform', d => `translate(${d.node.y0 * nameWidth}, 0)`)
-					.attr('data-char', d => d.child.data.char)
-					.attr('data-depth', d => d.child.depth)
-					.attr('data-depth', d => d.node.depth)
-					.classed('is-hidden', d => d.node.depth > guessDepth)
-					.classed('is-guess', d => d.child.data.guess || shouldTutorial)
+					.classed('is-guess', d => d.child.data.guess)
 					.classed('is-correct', d => d.child.data.correct)
-					.classed('is-reveal', shouldReveal);
+					.classed('is-visible', d => d.node.depth <= guessDepth);
 
 				$letter
 					.selectAll('.text-letter')
@@ -304,7 +290,11 @@ d3.selection.prototype.puddingChartSankey = function init() {
 					})
 					.attr('x', linkWidth / 2)
 					// .text(d => d.child.data.count)
-					.text(d => d3.format('.0%')(d.child.data.percent))
+					.text(d =>
+						d3
+							.format('.3s')(d.child.data.count)
+							.replace(/\.0*/g, '')
+					)
 					.classed('is-visible', d => d.child.data.percent >= 0.2);
 
 				return Chart;
