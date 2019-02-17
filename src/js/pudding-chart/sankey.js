@@ -228,7 +228,6 @@ d3.selection.prototype.puddingChartSankey = function init() {
 					return $el;
 				}
 
-				// console.log(stackData);
 				const $letter = $letters
 					.selectAll('.letter')
 					.data(stackData, d => d.child.id)
@@ -237,6 +236,8 @@ d3.selection.prototype.puddingChartSankey = function init() {
 					.classed('is-guess', d => d.child.data.guess)
 					.classed('is-correct', d => d.child.data.correct)
 					.classed('is-visible', d => d.node.depth <= guessDepth);
+
+				// $letter.each(d => console.log(d));
 
 				$letter
 					.selectAll('.text-letter')
