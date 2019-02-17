@@ -1,0 +1,61 @@
+svg.pudding-chart
+	margin 0 auto
+	display block
+	user-select none
+	
+	&.show-result
+		// 
+
+	// strip of line
+	.node
+		display none
+		&.is-visible
+			display block
+		&.is-guess
+			// 
+		&.is-correct
+			// 
+
+	// the text
+	.letter
+		display none
+		&.is-visible
+			display block
+		&.is-guess
+			//
+		&.is-correct
+			// 
+		
+		text
+			font-family $sans
+			font-weight bold
+			text-transform uppercase
+			opacity 1
+
+		.text--bg
+			fill none
+			stroke-width 3px
+			stroke $bg
+			stroke-opacity 0.67
+		
+		.text--fg
+			fill $fg
+
+		.text-count
+			set-type-size(x-small)
+			opacity 0
+			&.text--bg
+				stroke-width 2px
+			&.is-visible
+				opacity 1
+
+	// path between nodes
+	.link
+		stroke none
+		display none
+		&.is-visible
+			display block
+		&.is-guess
+			// 
+		&.is-correct
+			// 
