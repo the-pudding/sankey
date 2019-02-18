@@ -6,9 +6,9 @@ import britneyData from './britney';
 import PEOPLE from './people';
 
 // TODO remove slice
-const PEOPLE_QUEUE = PEOPLE.slice(0, 2)
-	.map(d => ({ ...d }))
-	.filter(d => d.id !== 'britney');
+const PEOPLE_QUEUE = PEOPLE.map(d => ({ ...d })).filter(
+	d => d.id !== 'britney'
+);
 d3.shuffle(PEOPLE_QUEUE);
 
 const TUTORIAL_DATA = britneyData.filter(d => d.count > 1000).slice(0, 10);
@@ -285,6 +285,7 @@ function cleanAllData(data) {
 
 function nextQuestion() {
 	const { id } = PEOPLE_QUEUE.pop();
+
 	if (!PEOPLE_QUEUE.length) $nav.select('.btn--new').property('disabled', true);
 	showQuestion(id);
 }
@@ -297,6 +298,7 @@ function init() {
 	)
 		.then(response => {
 			cleanAllData(response.data.names);
+			console.log(allData);
 			$nav.classed('is-visible', true);
 			$nav.select('.btn--new').on('click', handleNewClick);
 			$nav.select('.btn--all').on('click', handleAllClick);

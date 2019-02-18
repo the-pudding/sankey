@@ -2,68 +2,111 @@
   {
     "id": "britney",
     "pos": 0,
-    "fullname": ["britney", "spears"]
-  },
-  {
-    "id": "russell",
-    "pos": 1,
-    "fullname": ["Testing", "Russell"]
+    "fullname": ["britney", "spears"],
+    "guess": ""
   },
   {
     "id": "antetokounmpo",
     "pos": 1,
-    "fullname": ["Giannis", "Antetokounmpo"]
+    "fullname": ["Giannis", "Antetokounmpo"],
+    "guess": "anttatakoupo"
   },
   {
     "id": "kaepernick",
     "pos": 1,
-    "fullname": ["Colin", "Kaepernick"]
+    "fullname": ["Colin", "Kaepernick"],
+    "guess": "kapernick"
   },
   {
     "id": "picabo",
     "pos": 0,
-    "fullname": ["Picabo", "Street"]
+    "fullname": ["Picabo", "Street"],
+    "guess": "peekaboo"
   },
   {
     "id": "galifianakis",
     "pos": 1,
-    "fullname": ["Zach", "Galifianakis"]
+    "fullname": ["Zach", "Galifianakis"],
+    "guess": "galiphinakas"
   },
   {
     "id": "deschanel",
     "pos": 1,
-    "fullname": ["Zooey", "Deschanel"]
+    "fullname": ["Zooey", "Deschanel"],
+    "guess": "dachanel"
   },
   {
     "id": "mcconaughey",
     "pos": 1,
     "fullname": ["Matthew", "McConaughey"],
+    "guess": "mcconaghay",
     "phonetic": "/məˈkɒnəheɪ/"
   },
   {
-    "id": "Poehler",
+    "id": "poehler",
     "pos": 1,
-    "fullname": ["Amy", "Poehler"]
+    "fullname": ["Amy", "Poehler"],
+    "guess": "poller"
   },
   {
     "id": "macaulay",
     "pos": 0,
-    "fullname": ["Macaulay", "Culkin"]
+    "fullname": ["Macaulay", "Culkin"],
+    "guess": "mculley"
   },
 
   {
     "id": "morissette",
     "pos": 1,
-    "fullname": ["Alanis", "Morissette"]
+    "fullname": ["Alanis", "Morissette"],
+    "guess": "morrisette"
   },
   {
     "id": "mclachlan",
     "pos": 1,
-    "fullname": ["Sarah", "McLachlan"]
+    "fullname": ["Sarah", "McLachlan"],
+    "guess": "mcglaughlin"
   },
   {
     "id": "palahniuk",
     "pos": 1,
-    "fullname": ["Chuck", "Palahniuk"]
+    "fullname": ["Chuck", "Palahniuk"],
+    "guess": "palaneuk"
+  },
+  {
+    "id": "shyamalan",
+    "pos": 1,
+    "fullname": ["M. Night", "shyamalan"],
+    "guess": "shamalaughn"
+  },
+  {
+    "id": "mcgwire",
+    "pos": 1,
+    "fullname": ["Mark", "McGwire"],
+    "guess": "mcguire"
+  },
+  {
+    "id": "johansson",
+    "pos": 1,
+    "fullname": ["Scarlett", "Johansson"],
+    "guess": "johanssan"
+  },
+  {
+    "id": "minaj",
+    "pos": 1,
+    "fullname": ["Nicki", "Minaj"],
+    "guess": "minage"
+  },
+  {
+    "id": "labeouf",
+    "pos": 1,
+    "fullname": ["Shia", "LaBeouf"],
+    "guess": "labeuff"
+  },
+  {
+    "id": "eilish",
+    "pos": 1,
+    "fullname": ["Billie", "Eilish"],
+    "guess": "ilish"
   }
 ]

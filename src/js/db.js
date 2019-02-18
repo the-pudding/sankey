@@ -63,7 +63,6 @@ function setup() {
 	userData = setupUserData();
 	if (!userData.results) connect();
 	// console.log({ userData });
-	// update({ key: 'russell', value: 'russel' });
 }
 
 function closeConnection() {
