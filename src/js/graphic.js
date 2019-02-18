@@ -49,7 +49,15 @@ function handleInputChange() {
 
 	const match = versionsClone.find(d => d.name === ` ${guess}`);
 	if (match) match.count += 1;
-	else versionsClone.push({ name: ` ${guess}`, count: 1, countScaled: 1 });
+	else versionsClone.push({ name: ` ${guess}`, count: 1 });
+
+	const max = d3.max(versionsClone, p => p.count);
+	const scaleCount = d3
+		.scaleSqrt()
+		.domain([1, max])
+		.range([2, 10]);
+
+	versionsClone.forEach(v => (v.countScaled = scaleCount(v.count)));
 
 	const total = d3.sum(versionsClone, d => d.count);
 
@@ -191,9 +199,16 @@ function showQuestion(id) {
 		...PEOPLE.find(d => d.id === id),
 		versions: [
 			...allData[id],
-			{ name: ` ${id.charAt(0)}`, count: 1, countScaled: 1, user: true }
+			{ name: ` ${id.charAt(0)}`, count: 1, user: true }
 		]
 	};
+
+	const max = d3.max(datum.versions, p => p.count);
+	const scaleCount = d3
+		.scaleSqrt()
+		.domain([1, max])
+		.range([2, 10]);
+	datum.versions.forEach(v => (v.countScaled = scaleCount(v.count)));
 
 	const $question = createQuestion(datum);
 
