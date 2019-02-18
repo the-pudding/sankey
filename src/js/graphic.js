@@ -39,9 +39,8 @@ function handleInputChange() {
 	const guess = val.length && val.charAt(0) === start ? val : start;
 	this.value = guess;
 
-	console.log({ val, guess });
 	const { id, versions } = $input.datum();
-	const versionsClone = versions.map(d => ({ ...d }));
+	const versionsClone = versions.filter(d => !d.user).map(d => ({ ...d }));
 
 	const match = versionsClone.find(d => d.name === ` ${guess}`);
 	if (match) match.count += 1;
@@ -187,11 +186,10 @@ function showQuestion(id) {
 		...PEOPLE.find(d => d.id === id),
 		versions: [
 			...allData[id],
-			{ name: ` ${id.charAt(0)}`, count: 1, countScaled: 1 }
+			{ name: ` ${id.charAt(0)}`, count: 1, countScaled: 1, user: true }
 		]
 	};
 
-	console.log({ datum });
 	const $question = createQuestion(datum);
 
 	const total = d3.sum(datum.versions, d => d.count);

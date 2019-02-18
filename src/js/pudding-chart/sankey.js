@@ -202,7 +202,6 @@ d3.selection.prototype.puddingChartSankey = function init() {
 					return false;
 				});
 
-				// console.log({ stackData });
 				$links
 					.selectAll('.link')
 					.data(stackData, d => d.child.id)
@@ -224,9 +223,9 @@ d3.selection.prototype.puddingChartSankey = function init() {
 
 				function enterLetter(sel) {
 					const $el = sel.append('g').attr('class', 'letter');
-					$el.call(createText, { name: 'letter', mod: 'bg' });
+					// $el.call(createText, { name: 'letter', mod: 'bg' });
 					$el.call(createText, { name: 'letter', mod: 'fg' });
-					$el.call(createText, { name: 'count', mod: 'bg' });
+					// $el.call(createText, { name: 'count', mod: 'bg' });
 					$el.call(createText, { name: 'count', mod: 'fg' });
 					return $el;
 				}
@@ -240,10 +239,9 @@ d3.selection.prototype.puddingChartSankey = function init() {
 					.classed('is-correct', d => d.child.data.correct)
 					.classed('is-visible', d => d.node.depth <= guessDepth);
 
-				// $letter.each(d => console.log(d));
-
 				$letter
 					.selectAll('.text-letter')
+					.data((d, i, n) => d3.range(n.length).map(() => ({ ...d })))
 					.attr('y', d => {
 						const tL =
 							d.node.x0 * height +
@@ -266,7 +264,10 @@ d3.selection.prototype.puddingChartSankey = function init() {
 
 						const midPosChild = (bR - tR) / 2;
 						const delta = (tR - tL) / 2;
-						return tL + midPosChild + delta;
+
+						const y = tL + midPosChild + delta;
+
+						return y;
 					})
 					.attr('x', linkWidth / 2)
 					.style('font-size', d => `${scaleFont(d.child.value)}px`)
@@ -274,6 +275,7 @@ d3.selection.prototype.puddingChartSankey = function init() {
 
 				$letter
 					.selectAll('.text-count')
+					.data((d, i, n) => d3.range(n.length).map(() => ({ ...d })))
 					.attr('y', d => {
 						const tL =
 							d.node.x0 * height +
@@ -300,7 +302,6 @@ d3.selection.prototype.puddingChartSankey = function init() {
 						return tL + midPosChild + delta + fs;
 					})
 					.attr('x', linkWidth / 2)
-					// .text(d => d.child.data.count)
 					.text(d =>
 						d3
 							.format('.3s')(d.child.data.count)

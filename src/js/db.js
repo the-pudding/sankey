@@ -62,7 +62,7 @@ function setup() {
 	if (window.location.host.includes('localhost')) clear();
 	userData = setupUserData();
 	if (!userData.results) connect();
-	console.log({ userData });
+	// console.log({ userData });
 	// update({ key: 'russell', value: 'russel' });
 }
 
