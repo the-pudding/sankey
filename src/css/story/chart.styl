@@ -6,8 +6,14 @@ svg.pudding-chart
 	&.show-result
 		.node, .link, .letter
 			display block
+		.letter.is-visible
+			display block
+		.letter.is-correct text
+			opacity 1
+		.text-count.is-visible
+			display block
 
-	// strip of line
+	// strip of line divider
 	.node
 		display none
 		&.is-visible
@@ -19,21 +25,24 @@ svg.pudding-chart
 
 		rect
 			opacity 0
+	
+	
 	// the text
 	.letter
 		display none
 		&.is-visible
-			display block
+			// display block
 		&.is-guess
-			//
-		&.is-correct
-			// 
+			display block
+			text
+				opacity 1
+		// &.is-correct
 		
 		text
 			font-family $sans
 			font-weight bold
 			text-transform uppercase
-			opacity 1
+			opacity 0.75
 
 		.text--bg
 			fill none
@@ -46,11 +55,9 @@ svg.pudding-chart
 
 		.text-count
 			set-type-size(x-small)
-			opacity 0
+			display none
 			&.text--bg
 				stroke-width 2px
-			&.is-visible
-				opacity 1
 
 	// path between nodes
 	.link
@@ -62,3 +69,12 @@ svg.pudding-chart
 			// 
 		&.is-correct
 			// 
+
+
+svg.show-tutorial
+	.letter.is-visible
+		display block
+	.letter.is-correct text
+		opacity 1
+	.text-count.is-visible
+		display block

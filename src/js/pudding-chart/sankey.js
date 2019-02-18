@@ -159,7 +159,9 @@ d3.selection.prototype.puddingChartSankey = function init() {
 
 				d3.partition()(data);
 
-				$svg.classed('show-result', shouldReveal);
+				$svg
+					.classed('show-result', shouldReveal)
+					.classed('show-tutorial', shouldTutorial);
 
 				const enterNode = sel => {
 					const $el = sel.append('g').attr('class', 'node');
@@ -207,7 +209,17 @@ d3.selection.prototype.puddingChartSankey = function init() {
 					.data(stackData, d => d.child.id)
 					.join('path')
 					.attr('class', 'link')
-					.style('fill', d => scaleColor(d.child.depth))
+					.style('fill', d => {
+						const col = scaleColor(d.child.depth);
+						const c = d3.hsl(col);
+						c.s *= 0.125;
+						c.l *= 0.825;
+						c.l = Math.max(0, c.l);
+						c.s = Math.max(0, c.s);
+						if (shouldReveal && !d.child.data.correct) return c.hex();
+						if (shouldTutorial && !d.child.data.correct) return c.hex();
+						return col;
+					})
 					.classed('is-guess', d => d.child.data.guess)
 					.classed('is-correct', d => d.child.data.correct)
 					.classed('is-visible', d => d.node.depth <= guessDepth)
