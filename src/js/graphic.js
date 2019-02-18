@@ -102,6 +102,7 @@ function handleAllClick() {
 		const chart = $figure
 			.datum(sankeyData)
 			.puddingChartSankey()
+			.correct(id)
 			.resize()
 			.reveal(true)
 			.render(true);

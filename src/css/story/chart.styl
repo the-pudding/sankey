@@ -4,7 +4,8 @@ svg.pudding-chart
 	user-select none
 	
 	&.show-result
-		// 
+		.node, .link, .letter
+			display block
 
 	// strip of line
 	.node
@@ -16,6 +17,8 @@ svg.pudding-chart
 		&.is-correct
 			// 
 
+		rect
+			opacity 0
 	// the text
 	.letter
 		display none

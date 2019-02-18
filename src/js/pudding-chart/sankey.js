@@ -202,6 +202,7 @@ d3.selection.prototype.puddingChartSankey = function init() {
 					return false;
 				});
 
+				// console.log({ stackData });
 				$links
 					.selectAll('.link')
 					.data(stackData, d => d.child.id)
