@@ -14,6 +14,10 @@ function getGuess() {
 	return userData.guess;
 }
 
+function getResults() {
+	return userData.results;
+}
+
 function setupUserData() {
 	if (hasStorage) {
 		let id = window.localStorage.getItem('pudding_sankey_id');
@@ -24,12 +28,15 @@ function setupUserData() {
 
 		let guess = window.localStorage.getItem('pudding_sankey_guess');
 		guess = guess ? JSON.parse(guess) : {};
-		return { id, guess };
+
+		const results = window.localStorage.getItem('pudding_sankey_results');
+
+		return { id, guess, results };
 	}
 
 	const newID = generateID();
 	window.localStorage.setItem('pudding_sankey_id', newID);
-	return { id: newID, guess: {} };
+	return { id: newID, guess: {}, results: false };
 }
 
 function connect() {
@@ -45,21 +52,18 @@ function connect() {
 	connected = true;
 }
 
-function exists() {
-	// return typeof userData.guesses === 'number' && typeof userData.guess === 'number';
-	return false;
-}
-
 function clear() {
 	localStorage.removeItem('pudding_sankey_id');
 	localStorage.removeItem('pudding_sankey_guess');
+	localStorage.removeItem('pudding_sankey_results');
 }
 
 function setup() {
 	if (window.location.host.includes('localhost')) clear();
 	userData = setupUserData();
-	if (!exists()) connect();
-	update({ key: 'russell', value: 'russel' });
+	if (!userData.results) connect();
+	console.log({ userData });
+	// update({ key: 'russell', value: 'russel' });
 }
 
 function closeConnection() {
@@ -67,6 +71,13 @@ function closeConnection() {
 		firebaseApp.delete().then(() => {
 			connected = false;
 		});
+}
+
+function finish() {
+	userData.results = 'true';
+	if (hasStorage) window.localStorage.setItem('pudding_sankey_results', 'true');
+
+	closeConnection();
 }
 
 function update({ key, value }) {
@@ -88,4 +99,4 @@ function update({ key, value }) {
 	}
 }
 
-export default { setup, update, getGuess, closeConnection };
+export default { setup, update, finish, getGuess, getResults, closeConnection };

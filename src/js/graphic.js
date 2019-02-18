@@ -1,10 +1,15 @@
 import './pudding-chart/tree';
 import './pudding-chart/sankey';
 import db from './db';
-import generateTreeData from './generate-tree-data';
 import generateSankeyData from './generate-sankey-data';
 import britneyData from './britney';
 import PEOPLE from './people';
+
+// TODO remove slice
+const PEOPLE_QUEUE = PEOPLE.slice(0, 2)
+	.map(d => ({ ...d }))
+	.filter(d => d.id !== 'britney');
+d3.shuffle(PEOPLE_QUEUE);
 
 const TUTORIAL_DATA = britneyData.filter(d => d.count > 1000).slice(0, 10);
 
@@ -18,9 +23,6 @@ const $quizContent = $quiz.select('.quiz__content');
 const $tutorialContent = d3.select('.tutorial__content');
 const $nav = $quiz.select('.quiz__nav');
 const $all = d3.select('#all');
-
-const width = 0;
-const height = 0;
 
 let tutorialChart = null;
 let quizChart = null;
@@ -37,6 +39,7 @@ function handleInputChange() {
 	const guess = val.length && val.charAt(0) === start ? val : start;
 	this.value = guess;
 
+	console.log({ val, guess });
 	const { id, versions } = $input.datum();
 	const versionsClone = versions.map(d => ({ ...d }));
 
@@ -77,13 +80,15 @@ function handleBritneyClick() {
 
 function handleNewClick() {
 	$quizContent.select('.question').remove();
-	showQuestion('russell');
+	if (PEOPLE_QUEUE.length) nextQuestion();
 }
 
 function handleAllClick() {
+	db.finish();
+
 	$quizContent.select('.question').remove();
 
-	allCharts = PEOPLE.map(person => {
+	allCharts = PEOPLE.filter(d => d.id !== 'britney').map(person => {
 		const { id, fullname } = person;
 
 		const total = d3.sum(allData[id], d => d.count);
@@ -162,8 +167,8 @@ function createQuestion(d) {
 		.append('input')
 		.attr('maxlength', d.id.length + 2)
 		.attr('spellcheck', false)
-		.attr('data-start', start)
-		.attr('value', start);
+		.attr('data-start', start.toLowerCase())
+		.attr('value', start.toLowerCase());
 	$response
 		.append('button')
 		.attr('class', 'btn')
@@ -186,6 +191,7 @@ function showQuestion(id) {
 		]
 	};
 
+	console.log({ datum });
 	const $question = createQuestion(datum);
 
 	const total = d3.sum(datum.versions, d => d.count);
@@ -279,7 +285,15 @@ function cleanAllData(data) {
 	}
 }
 
+function nextQuestion() {
+	const { id } = PEOPLE_QUEUE.pop();
+	if (!PEOPLE_QUEUE.length) $nav.select('.btn--new').property('disabled', true);
+	showQuestion(id);
+}
+
 function init() {
+	db.setup();
+
 	d3.json(
 		`https://pudding.cool/2019/02/sankey-data/data.json?version=${Date.now()}`
 	)
@@ -298,14 +312,10 @@ function init() {
 				.html(SVG_VOLUME);
 
 			showTutorial('britney');
-			showQuestion('russell');
+			if (db.getResults()) handleAllClick();
+			else nextQuestion();
 		})
 		.catch(console.error);
-
-	// db.setup();
-	// console.log(db.getGuess());
-
-	resize();
 }
 
 export default { init, resize };
