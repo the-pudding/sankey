@@ -223,9 +223,9 @@ d3.selection.prototype.puddingChartSankey = function init() {
 
 				function enterLetter(sel) {
 					const $el = sel.append('g').attr('class', 'letter');
-					// $el.call(createText, { name: 'letter', mod: 'bg' });
+					$el.call(createText, { name: 'letter', mod: 'bg' });
 					$el.call(createText, { name: 'letter', mod: 'fg' });
-					// $el.call(createText, { name: 'count', mod: 'bg' });
+					$el.call(createText, { name: 'count', mod: 'bg' });
 					$el.call(createText, { name: 'count', mod: 'fg' });
 					return $el;
 				}

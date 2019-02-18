@@ -2,6 +2,7 @@ import firebase from '@firebase/app';
 import '@firebase/database';
 import generateID from './generate-id';
 import checkStorage from './check-storage';
+import SWEAR from './swear';
 
 let firebaseApp = null;
 let firebaseDB = null;
@@ -79,6 +80,23 @@ function finish() {
 	closeConnection();
 }
 
+function getSubmissions(data) {
+	const output = {};
+	Object.keys(data).forEach(d => {
+		const g = data[d];
+
+		// minimum character length
+		const minChars = Math.floor(d.length * 0.75);
+		if (g.length < minChars) return false;
+
+		const hasSwear = SWEAR.find(s => g.includes(s));
+		if (hasSwear) return false;
+
+		// add to submit list
+		output[d] = g;
+	});
+}
+
 function update({ key, value }) {
 	userData.guess[key] = value;
 	if (hasStorage)
@@ -87,10 +105,11 @@ function update({ key, value }) {
 			JSON.stringify(userData.guess)
 		);
 	const { id, guess } = userData;
+	const submissions = getSubmissions(guess);
 	if (connected) {
 		firebaseDB
 			.ref(id)
-			.set({ guess })
+			.set({ guess: submissions })
 			.then(() => {
 				console.log('saved');
 			})

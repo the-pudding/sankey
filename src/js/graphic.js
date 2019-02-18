@@ -32,11 +32,16 @@ let allData = {};
 
 function resize() {}
 
+function cleanInput({ val, start }) {
+	const clean = val.replace(/[^a-z]/g, '');
+	return clean.length && clean.charAt(0) === start ? clean : start;
+}
+
 function handleInputChange() {
 	const $input = d3.select(this);
 	const val = this.value.toLowerCase();
 	const start = $input.attr('data-start');
-	const guess = val.length && val.charAt(0) === start ? val : start;
+	const guess = cleanInput({ val, start });
 	this.value = guess;
 
 	const { id, versions } = $input.datum();
@@ -298,7 +303,7 @@ function init() {
 	)
 		.then(response => {
 			cleanAllData(response.data.names);
-			console.log(allData);
+			// console.log(allData);
 			$nav.classed('is-visible', true);
 			$nav.select('.btn--new').on('click', handleNewClick);
 			$nav.select('.btn--all').on('click', handleAllClick);
