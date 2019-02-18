@@ -283,7 +283,7 @@ function init() {
 		`https://pudding.cool/2019/02/sankey-data/data.json?version=${Date.now()}`
 	)
 		.then(response => {
-			cleanAllData(response.data);
+			cleanAllData(response.data.names);
 			$nav.classed('is-visible', true);
 			$nav.select('.btn--new').on('click', handleNewClick);
 			$nav.select('.btn--all').on('click', handleAllClick);

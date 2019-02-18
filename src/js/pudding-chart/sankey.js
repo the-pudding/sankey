@@ -126,10 +126,12 @@ d3.selection.prototype.puddingChartSankey = function init() {
 				nameWidth = linkWidth * (count + 1); // +1 for the empty space at start
 				const offsetWidth = linkWidth * count;
 
-				$svg.attr('width', width + MARGIN).attr('height', height + MARGIN * 2);
+				$svg
+					.attr('width', width + MARGIN * 2)
+					.attr('height', height + MARGIN * 2);
 
 				// center
-				const offsetX = (width - offsetWidth) / 2 + linkWidth / 2;
+				const offsetX = (width - offsetWidth) / 2;
 
 				$svg
 					.select('g')
