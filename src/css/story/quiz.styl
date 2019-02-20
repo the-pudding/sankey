@@ -9,16 +9,15 @@
 		max-width 20rem
 		margin 0 auto
 		img
-			max-width 10rem
+			max-width 8rem
 			margin 0 auto
+			border-radius 6px
 		button
 			margin 0 auto
-			margin-top 0.5rem
+			margin-top 1rem
 			display block
 			font-family $mono
 			text-transform uppercase
-			color $fg
-			background $off-white
 			padding 0.5rem
 			line-height 1
 		svg
@@ -32,7 +31,7 @@
 	.question__response
 		display flex
 		justify-content center
-		margin-top 1rem
+		margin-top 2rem
 		input
 			font-family $mono
 			font-size 32px
@@ -45,18 +44,25 @@
 			font-weight bold
 			color $guess-dark
 		button
+			margin-left 0.5rem
 			padding 1rem
-			border 1px solid $fg
-			background $off-white
 			font-family $sans
 
 
-	.quiz__nav
+	.question__nav
+		margin 0 auto
 		display flex
-		justify-content center
+		max-width 38rem
+		margin-top 0.5rem
+		// justify-content flex-end
 		visibility hidden
 		&.is-visible
 			visibility visible
 		button
-			width 10rem
-			margin 0 0.5rem
+			background transparent
+			border none
+			border-radius 0
+			padding 0
+			border-bottom 1px solid $gray
+			margin-right 1rem
+			color $gray-dark

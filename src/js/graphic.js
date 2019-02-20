@@ -21,8 +21,10 @@ const $audioQuiz = d3.select('audio--quiz');
 const $quiz = d3.select('#quiz');
 const $quizContent = $quiz.select('.quiz__content');
 const $tutorialContent = d3.select('.tutorial__content');
-const $nav = $quiz.select('.quiz__nav');
 const $all = d3.select('#all');
+const $allContent = $all.select('.all__content');
+
+let $nav = null;
 
 let tutorialChart = null;
 let quizChart = null;
@@ -98,7 +100,9 @@ function handleNewClick() {
 function handleAllClick() {
 	db.finish();
 
-	$quizContent.select('.question').remove();
+	$quiz.style('display', 'none');
+
+	$all.classed('is-visible', true);
 
 	allCharts = PEOPLE.filter(d => d.id !== 'britney').map(person => {
 		const { id, fullname } = person;
@@ -112,7 +116,7 @@ function handleAllClick() {
 			guess: db.getGuess(id) || ''
 		});
 
-		const $person = $all.append('div').attr('class', 'person');
+		const $person = $allContent.append('div').attr('class', 'person');
 		$person.append('p').text(fullname.join(' '));
 
 		const $figure = $person.append('figure');
@@ -146,7 +150,7 @@ function createQuestion(d) {
 
 	$person
 		.append('img')
-		.attr('src', `assets/images/${d.id}.jpg`)
+		.attr('src', `assets/images/${d.id}@2x.jpg`)
 		.attr('alt', d.id);
 
 	const $button = $person.append('button').attr('class', 'btn');
@@ -175,6 +179,18 @@ function createQuestion(d) {
 
 	// RESPONSE
 	const $response = $question.append('div').attr('class', 'question__response');
+	$nav = $question.append('div').attr('class', 'question__nav is-visible');
+	$nav
+		.append('button')
+		.attr('class', 'btn btn--new')
+		.text('Show Me Another')
+		.on('click', handleNewClick);
+	$nav
+		.append('button')
+		.attr('class', 'btn btn--all')
+		.text('Skip To Results')
+		.on('click', handleAllClick);
+
 	const start = d.pos === 0 ? first.charAt(0) : last.charAt(0);
 
 	$response
@@ -183,10 +199,13 @@ function createQuestion(d) {
 		.attr('spellcheck', false)
 		.attr('data-start', start.toLowerCase())
 		.attr('value', start.toLowerCase());
+
 	$response
 		.append('button')
 		.attr('class', 'btn')
-		.text('Submit');
+		.text('I Think I’ve Got It');
+
+	$response.appe;
 
 	// FIGURE
 	$question.append('figure').attr('class', 'question__figure');
@@ -321,9 +340,7 @@ function init() {
 		.then(response => {
 			cleanAllData(response.data.names);
 			// console.log(allData);
-			$nav.classed('is-visible', true);
-			$nav.select('.btn--new').on('click', handleNewClick);
-			$nav.select('.btn--all').on('click', handleAllClick);
+
 			d3.select('.btn--skip')
 				.node()
 				.addEventListener('click', handleSkipClick);

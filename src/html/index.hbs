@@ -52,12 +52,16 @@
 				{{/each}}
 			</div>
 			<div class='quiz__content'></div>
-			<nav class='quiz__nav'>
-				<button class='btn btn--new'>{{{doc.buttonNew}}}</button>
-				<button class='btn btn--all'>{{{doc.buttonAll}}}</button>
-			</nav>
 		</section>
-		<section id='all'></section>
+		<section id='all'>
+			<div class='prose'>
+				<h3 class='prose__hed'>{{{doc.allHed}}}</h3>
+				{{#each doc.all}}
+				<p>{{{value}}}</p>
+				{{/each}}
+				<div class='all__content'></div>
+			</div>
+		</section>
 		<audio src='assets/audio/britney.mp3' class='hide-display audio--tutorial'></audio>
 		<audio class='hide-display audio--quiz'></audio>
 

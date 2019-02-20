@@ -9,8 +9,7 @@ header
 	a.logo
 		display block
 		border none
-		max-width 9rem
-		margin 1rem auto
+		max-width 1.5rem
 
 		svg
 			fill $off-black
@@ -20,14 +19,16 @@ header
 header.is-sticky
 	position fixed
 	transform translate3d(0,0,0)
-	background-color $white
-	box-shadow 0 0 7px 1px $gray-light
+	background-color transparent
 	height 3rem
 	display flex
 	align-items center
-	
+	pointer-events none
+
 	a.logo
-		margin 0 auto
+		margin-left 0.75rem
+		margin-top 0.25rem
+		pointer-events auto
 	
 	.header__toggle
 		position fixed
@@ -40,6 +41,7 @@ header.is-sticky
 		z-index set-index(overlay)
 		border none 
 		background-color transparent
+		pointer-events auto
 		svg
 			stroke $off-black
 		
@@ -141,3 +143,23 @@ header.is-sticky.is-dark
 		&:hover
 			background-color rgba($off-black, 0.75)
 			color $off-white
+
+.wordmark
+	margin 0 auto
+	position absolute
+	top 0
+	left 0
+	width 100%
+	z-index set-index(overlay)
+	background-color lighten($correct, 25)
+
+	a
+		display block
+		max-width 9rem
+		margin 0.5rem auto
+		border none
+		padding 0
+	
+	svg
+		path 
+			fill darken($correct-dark, 10)
