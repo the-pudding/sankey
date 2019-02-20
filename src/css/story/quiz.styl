@@ -3,7 +3,7 @@
 
 	.quiz__content
 		padding-top 1rem
-		
+
 	.question__figure
 		max-width 60rem
 		margin 0 auto
@@ -34,7 +34,7 @@
 	.question__response
 		display flex
 		justify-content center
-		margin-top 2rem
+		padding-top 2rem
 		input
 			font-family $mono
 			font-size 32px
@@ -46,13 +46,21 @@
 			display block
 			font-weight bold
 			color $guess-dark
+			&:disabled
+				cursor not-allowed
+				opacity 0.5
+			&.is-done
+				color $wrong-dark
+				&.is-correct
+					color $correct-dark
 		button
 			margin-left 0.5rem
 			padding 1rem
 			font-family $sans
 			width 10rem
 			&.is-next
-				background-color lighten($guess, 0)
+				background-color $gray-light
+				// color $off-white
 
 	.question__nav
 		margin 0 auto
@@ -71,3 +79,16 @@
 			border-bottom 1px solid $gray
 			margin-right 1rem
 			color $gray-dark
+
+
+	.question__message
+		text-align center
+		margin 0
+		margin-top 1.5rem
+		text-transform uppercase
+		color $wrong-dark
+		font-weight 700
+		&.is-correct
+			color $correct-dark
+		span
+			font-weight 700

@@ -75,6 +75,19 @@ function handleInputChange() {
 		.guess(guess.length)
 		.resize()
 		.render(true);
+
+	const correct = guess === id;
+	const { count } = versionsClone.find(d => d.name === ` ${id}`);
+	const percent = d3.format('.0%')(count / total);
+	const msg = `${
+		correct ? 'Correct' : 'Wrong'
+	}. <span>${percent}</span> of people get it right.`;
+	$quiz
+		.select('.question__message')
+		.classed('is-correct', guess === id)
+		.html(msg);
+
+	$input.classed('is-correct', guess === id);
 }
 
 function handleResponseClick() {
@@ -87,7 +100,14 @@ function handleResponseClick() {
 			.text('Show Me Another')
 			.classed('is-next', true);
 		handleInputChange.call($input.node());
-		$input.property('disabled', true);
+		$input.property('disabled', true).classed('is-done', true);
+		$quiz.select('.question__message').classed('is-visible', true);
+		const { top } = $quiz
+			.select('.question__response')
+			.node()
+			.getBoundingClientRect();
+		const y = window.scrollY + top;
+		window.scrollTo(0, y);
 	}
 }
 
@@ -202,6 +222,8 @@ function createQuestion(d) {
 		.attr('class', 'btn btn--all')
 		.text('Skip To Results')
 		.on('click', handleAllClick);
+
+	$question.append('p').attr('class', 'question__message');
 
 	const start = d.pos === 0 ? first.charAt(0) : last.charAt(0);
 
@@ -364,7 +386,7 @@ function init() {
 				.append('span')
 				.html(SVG_VOLUME);
 
-			// showTutorial('britney');
+			showTutorial('britney');
 			if (db.getResults()) handleAllClick();
 			else nextQuestion();
 		})
