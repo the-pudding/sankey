@@ -1,5 +1,5 @@
 // https://bl.ocks.org/timelyportfolio/a6f2f931935025b0476ea6180d348c59
-
+import * as Annotate from 'd3-svg-annotation';
 import C from '../color';
 
 d3.selection.prototype.puddingChartSankey = function init() {
@@ -36,6 +36,12 @@ d3.selection.prototype.puddingChartSankey = function init() {
 		let $nodes = null;
 		let $letters = null;
 		let $labels = null;
+		let $annotations = null;
+
+		const anno = {
+			key: ' brin',
+			text: 'of people type "n" at this point'
+		};
 
 		// helper functions
 		function stack(x) {
@@ -93,6 +99,72 @@ d3.selection.prototype.puddingChartSankey = function init() {
 			]);
 		}
 
+		function createAnnotation(datum) {
+			const $anno = $annotations.append('g').attr('class', 'annotation');
+
+			const typeCurve = Annotate.annotationCustomType(
+				Annotate.annotationCalloutElbow,
+				{
+					className: 'custom',
+					// connector: { type: 'curve' },
+					note: {
+						lineType: 'horizontal',
+						align: 'right'
+						// orientation: 'leftRight'
+					}
+				}
+			);
+
+			const percent = d3.format('.0%')(datum.child.data.percent);
+			const x = datum.node.y0 * nameWidth;
+			// const y = datum.child.x0 * height;
+
+			const tL =
+				datum.node.x0 * height +
+				((datum.node.x1 - datum.node.x0) * height - datum.node.h) / 2 +
+				datum[0][0] * datum.node.h;
+
+			const bL =
+				datum.node.x0 * height +
+				((datum.node.x1 - datum.node.x0) * height - datum.node.h) / 2 +
+				datum[0][1] * datum.node.h;
+
+			const y = tL + (bL - tL) / 2;
+
+			const annotationData = [
+				{
+					note: {
+						// title: d.year,
+						label: `${percent} of people type "n" at this point`,
+						padding: 6,
+						wrap: 120
+						// bgPadding: { top: 8, left: 8, right: 8, bottom: 8 }
+					},
+					data: { x, y },
+					// dx: (12 - +d.month) * flagW + flagW * 1.25,
+					dx: -linkWidth / 2,
+					// dy: +d.pos * flagH * 2,
+					dy: height * 0.1
+					// connector: {
+					// 	points: 1
+					// 	// curve: d3.curveBasis
+					// }
+				}
+			];
+
+			// console.log(datum.child);
+			const makeAnnotations = Annotate.annotation()
+				.type(typeCurve)
+				.notePadding(12)
+				.accessors({
+					x: d => d.x,
+					y: d => d.y
+				})
+				.annotations(annotationData);
+
+			$anno.call(makeAnnotations);
+		}
+
 		const Chart = {
 			// called once at start
 			init() {
@@ -104,6 +176,7 @@ d3.selection.prototype.puddingChartSankey = function init() {
 				$nodes = $g.append('g').attr('class', 'g-nodes');
 				$letters = $g.append('g').attr('class', 'g-letters');
 				$labels = $g.append('g').attr('class', 'g-labels');
+				$annotations = $g.append('g').attr('class', 'g-annotations');
 			},
 			// on resize, update new dimensions
 			resize() {
@@ -379,6 +452,9 @@ d3.selection.prototype.puddingChartSankey = function init() {
 						return `${c} of ${t}`;
 					});
 
+				$annotations.select('.annotation').remove();
+				if (shouldTutorial && guessDepth >= 3)
+					createAnnotation(stackData.find(d => d.child.data.key === ' brin'));
 				return Chart;
 			},
 			// get / set data
