@@ -78,10 +78,17 @@ function handleInputChange() {
 }
 
 function handleResponseClick() {
-	quizChart.reveal(true);
 	const $input = d3.select(this.previousSibling);
-	handleInputChange.call($input.node());
-	$input.property('disabled', true);
+	const disabled = $input.property('disabled');
+	if (disabled) handleNewClick();
+	else {
+		quizChart.reveal(true);
+		d3.select(this)
+			.text('Show Me Another')
+			.classed('is-next', true);
+		handleInputChange.call($input.node());
+		$input.property('disabled', true);
+	}
 }
 
 function handlePersonClick() {
@@ -94,7 +101,12 @@ function handleBritneyClick() {
 
 function handleNewClick() {
 	$quizContent.select('.question').remove();
-	if (PEOPLE_QUEUE.length) nextQuestion();
+	if (PEOPLE_QUEUE.length) {
+		nextQuestion();
+		const { top } = $quizContent.node().getBoundingClientRect();
+		const y = window.scrollY + top;
+		window.scrollTo(0, y);
+	}
 }
 
 function handleAllClick() {
@@ -271,16 +283,18 @@ function stepTutorial({ id, depth = 1 }) {
 		.data(sankeyData)
 		.guess(depth)
 		.resize()
+		.reveal(depth > id.length)
 		.render(true);
 
-	d3.timeout(
-		() => {
-			const next = depth + 1;
-			const nextDepth = next > id.length + 1 ? 1 : depth + 1;
-			stepTutorial({ id, depth: nextDepth });
-		},
-		depth > id.length ? 3000 : 200 + depth * 200
-	);
+	let delay = 500;
+	if (depth > id.length) delay = 4000;
+	else if (depth === 4) delay = 4000;
+
+	d3.timeout(() => {
+		const next = depth + 1;
+		const nextDepth = next > id.length + 1 ? 1 : depth + 1;
+		stepTutorial({ id, depth: nextDepth });
+	}, delay);
 }
 
 function showTutorial(id) {

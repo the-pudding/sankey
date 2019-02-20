@@ -1,6 +1,9 @@
 #quiz
 	padding-bottom 5rem
 
+	.quiz__content
+		padding-top 1rem
+		
 	.question__figure
 		max-width 60rem
 		margin 0 auto
@@ -47,7 +50,9 @@
 			margin-left 0.5rem
 			padding 1rem
 			font-family $sans
-
+			width 10rem
+			&.is-next
+				background-color lighten($guess, 0)
 
 	.question__nav
 		margin 0 auto

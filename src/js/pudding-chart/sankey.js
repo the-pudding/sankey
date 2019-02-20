@@ -5,8 +5,10 @@ import C from '../color';
 d3.selection.prototype.puddingChartSankey = function init() {
 	function createChart(el) {
 		const DEFAULT_WIDTH = 2;
-		const MIN_FONT_SIZE = 14;
+		const MIN_FONT_SIZE = 16;
 		const MARGIN = MIN_FONT_SIZE;
+		const MARGIN_RIGHT = 60;
+		const OFF_H = 144;
 		const MAX_CHARS = 'Antetokounmpo'.length + 2;
 
 		const scaleFont = d3.scaleLinear();
@@ -33,6 +35,7 @@ d3.selection.prototype.puddingChartSankey = function init() {
 		let $links = null;
 		let $nodes = null;
 		let $letters = null;
+		let $labels = null;
 
 		// helper functions
 		function stack(x) {
@@ -94,12 +97,16 @@ d3.selection.prototype.puddingChartSankey = function init() {
 				$links = $g.append('g').attr('class', 'g-links');
 				$nodes = $g.append('g').attr('class', 'g-nodes');
 				$letters = $g.append('g').attr('class', 'g-letters');
+				$labels = $g.append('g').attr('class', 'g-labels');
 			},
 			// on resize, update new dimensions
 			resize() {
 				const w = $sel.node().offsetWidth;
 				// TODO do height minus elements (input + buttons)
-				const h = Math.min(window.innerHeight * 0.75, 480);
+				// const offN = d3.select('.question__nav').node().offsetHeight;
+				// const offR = d3.select('.question__response').node().offsetHeight;
+
+				const h = Math.min(window.innerHeight - OFF_H, 480);
 
 				linkWidth = Math.floor((w - MARGIN * 2) / MAX_CHARS);
 
@@ -108,7 +115,7 @@ d3.selection.prototype.puddingChartSankey = function init() {
 					Math.floor(linkWidth * 0.67)
 				);
 
-				width = w - MARGIN * 2;
+				width = w - MARGIN - MARGIN_RIGHT;
 				height = h - MARGIN * 2;
 				const lenCorrect = correctName.length - 1;
 				const lenGuess = guessDepth + 1;
@@ -122,7 +129,7 @@ d3.selection.prototype.puddingChartSankey = function init() {
 				const offsetWidth = linkWidth * count;
 
 				$svg
-					.attr('width', width + MARGIN * 2)
+					.attr('width', width + MARGIN + MARGIN_RIGHT)
 					.attr('height', height + MARGIN * 2);
 
 				// center
@@ -205,17 +212,6 @@ d3.selection.prototype.puddingChartSankey = function init() {
 					.data(stackData, d => d.child.id)
 					.join('path')
 					.attr('class', 'link')
-					// .style('fill', d => {
-					// 	const col = scaleColorBlue(d.child.depth);
-					// 	const c = d3.hsl(col);
-					// 	c.s = 0;
-					// 	// c.l *= 0.5;
-					// 	// c.l = Math.max(0, c.l);
-					// 	// c.s = Math.max(0, c.s);
-					// 	if (shouldReveal && !d.child.data.correct) return c.hex();
-					// 	if (shouldTutorial && !d.child.data.correct) return c.hex();
-					// 	return col;
-					// })
 					.classed('is-guess', d => d.child.data.guess)
 					.classed('is-correct', d => d.child.data.correct)
 					.classed('is-visible', d => d.node.depth <= guessDepth)
@@ -316,6 +312,65 @@ d3.selection.prototype.puddingChartSankey = function init() {
 							.replace(/\.0*/g, '')
 					)
 					.classed('is-visible', d => d.child.data.percent >= 0.2);
+
+				function enterLabel(sel) {
+					const $el = sel.append('g').attr('class', 'label');
+					$el.call(createText, { name: 'name', mod: 'fg' });
+					$el.call(createText, { name: 'count', mod: 'fg' });
+					return $el;
+				}
+
+				const labelData = stackData.filter(d => {
+					if (shouldReveal)
+						return (
+							!d.child.children && (d.child.data.guess || d.child.data.correct)
+						);
+					if (!shouldTutorial)
+						return d.child.data.guess && d.child.depth === guessDepth + 1;
+					return false;
+				});
+
+				const $label = $labels
+					.selectAll('.label')
+					.data(labelData, d => d.child.id)
+					.join(enterLabel)
+					.attr('class', 'label')
+					.attr('transform', d => {
+						const tR =
+							d.child.x0 * height +
+							((d.child.x1 - d.child.x0) * height - d.child.h) / 2;
+
+						const bR =
+							d.child.x0 * height +
+							((d.child.x1 - d.child.x0) * height - d.child.h) / 2 +
+							d.child.h;
+
+						const midPosChild = (bR - tR) / 2;
+						// const fs = scaleFont(d.child.value);
+
+						const y = tR + midPosChild;
+						const x = d.child.y0 * nameWidth + DEFAULT_WIDTH * 4;
+
+						return `translate(${x}, ${y})`;
+					})
+					.classed('is-guess', d => d.child.data.guess)
+					.classed('is-correct', d => d.child.data.correct);
+
+				$label
+					.selectAll('.text-name')
+					.attr('text-anchor', 'start')
+					.data((d, i, n) => d3.range(n.length).map(() => ({ ...d })))
+					.text(d => {
+						if (shouldReveal)
+							return d.child.data.correct ? 'Correct' : 'Your Path';
+						return 'Your Path';
+					});
+
+				$label
+					.selectAll('.text-count')
+					.attr('text-anchor', 'start')
+					.data((d, i, n) => d3.range(n.length).map(() => ({ ...d })));
+				// .text(d => (d.child.data.correct ? 'Correct' : 'You'));
 
 				return Chart;
 			},

@@ -20,8 +20,15 @@ svg.pudding-chart
 			fill $wrong-dark
 		.letter.is-correct .text--fg
 			fill $correct-dark
+		.label
+			display block
+			&.is-correct .text-name
+				fill $correct-dark
+			&.is-guess .text-name
+				fill $wrong-dark
 		.text-count.is-visible
 			display block
+		
 		
 
 	&.show-tutorial
@@ -37,6 +44,10 @@ svg.pudding-chart
 			fill $correct-dark
 		.text-count.is-visible
 			display block
+		.label
+			&.is-correct .text-name
+				fill $correct-dark
+		
 
 	// strip of line divider
 	.node
@@ -78,7 +89,7 @@ svg.pudding-chart
 			fill $gray-dark
 
 		.text-count
-			set-type-size(x-small)
+			set-type-size(small)
 			display none
 			&.text--bg
 				stroke-width 2px
@@ -95,3 +106,18 @@ svg.pudding-chart
 		&.is-correct
 			// 
 
+
+	.label
+		display none
+		
+		&.is-guess
+			display block
+		
+			.text-name
+				fill $guess-dark
+
+		text
+			font-family $sans
+			font-weight bold
+			text-transform uppercase
+			set-type-size(small)
