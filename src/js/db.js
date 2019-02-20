@@ -16,8 +16,18 @@ function getGuess(id) {
 	return null;
 }
 
-function getResults() {
+function hasResults() {
 	return userData.results;
+}
+
+function getReturner() {
+	return userData.returner;
+}
+
+function setReturner() {
+	userData.returner = 'true';
+	if (hasStorage)
+		window.localStorage.setItem('pudding_sankey_returner', 'true');
 }
 
 function setupUserData() {
@@ -32,13 +42,14 @@ function setupUserData() {
 		guess = guess ? JSON.parse(guess) : {};
 
 		const results = window.localStorage.getItem('pudding_sankey_results');
+		const returner = window.localStorage.getItem('pudding_sankey_returner');
 
-		return { id, guess, results };
+		return { id, guess, results, returner };
 	}
 
 	const newID = generateID();
 	window.localStorage.setItem('pudding_sankey_id', newID);
-	return { id: newID, guess: {}, results: false };
+	return { id: newID, guess: {}, results: false, returner: false };
 }
 
 function connect() {
@@ -51,7 +62,8 @@ function connect() {
 	};
 	firebaseApp = firebase.initializeApp(config);
 	firebaseDB = firebaseApp.database();
-	connected = true;
+	// TODO remove to store
+	// connected = true;
 }
 
 function clear() {
@@ -118,4 +130,13 @@ function update({ key, value }) {
 	}
 }
 
-export default { setup, update, finish, getGuess, getResults, closeConnection };
+export default {
+	setup,
+	update,
+	finish,
+	getGuess,
+	hasResults,
+	setReturner,
+	getReturner,
+	closeConnection
+};

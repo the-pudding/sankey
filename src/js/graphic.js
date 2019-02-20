@@ -29,7 +29,7 @@ let $nav = null;
 let tutorialChart = null;
 let quizChart = null;
 let allCharts = [];
-
+const returnVisit = false;
 let allData = {};
 
 function resize() {}
@@ -99,7 +99,7 @@ function handleResponseClick() {
 		d3.select(this)
 			.text('Show Me Another')
 			.classed('is-next', true);
-		handleInputChange.call($input.node());
+		handleInputChange.call($input.node(), true);
 		$input.property('disabled', true).classed('is-done', true);
 		$quiz.select('.question__message').classed('is-visible', true);
 		const { top } = $quiz
@@ -108,6 +108,10 @@ function handleResponseClick() {
 			.getBoundingClientRect();
 		const y = window.scrollY + top;
 		window.scrollTo(0, y);
+
+		const { id } = $input.datum();
+		const { value } = $input.node();
+		db.update({ key: id, value });
 	}
 }
 
@@ -129,8 +133,34 @@ function handleNewClick() {
 	}
 }
 
+function finishData() {
+	// update data
+	Object.keys(allData).forEach(id => {
+		const value = db.getGuess(id);
+		if (value) {
+			const match = allData[id].find(d => d.name === ` ${value}`);
+			// only add to tally if not a returner
+			if (match) {
+				if (!db.getReturner()) match.count += 1;
+			} else allData[id].push({ name: ` ${value}`, count: 1 });
+
+			const max = d3.max(allData[id], p => p.count);
+			const scaleCount = d3
+				.scaleSqrt()
+				.domain([1, max])
+				.range([2, 10]);
+
+			allData[id].forEach(v => (v.countScaled = scaleCount(v.count)));
+		}
+	});
+
+	db.setReturner();
+}
+
 function handleAllClick() {
 	db.finish();
+
+	finishData();
 
 	$quiz.style('display', 'none');
 
@@ -163,6 +193,10 @@ function handleAllClick() {
 
 		return chart;
 	});
+
+	const { top } = $all.node().getBoundingClientRect();
+	const y = window.scrollY + top;
+	window.scrollTo(0, y);
 }
 
 function handleSkipClick(event) {
@@ -375,7 +409,6 @@ function init() {
 	)
 		.then(response => {
 			cleanAllData(response.data.names);
-			// console.log(allData);
 
 			d3.select('.btn--skip')
 				.node()
@@ -387,7 +420,7 @@ function init() {
 				.html(SVG_VOLUME);
 
 			showTutorial('britney');
-			if (db.getResults()) handleAllClick();
+			if (db.hasResults()) handleAllClick();
 			else nextQuestion();
 		})
 		.catch(console.error);

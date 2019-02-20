@@ -449,7 +449,7 @@ d3.selection.prototype.puddingChartSankey = function init() {
 					.selectAll('.text-number')
 					.attr('text-anchor', 'start')
 					.data((d, i, n) => d3.range(n.length).map(() => ({ ...d })))
-					.attr('y', -MIN_FONT_SIZE)
+					.attr('y', MIN_FONT_SIZE)
 					.text(d => {
 						const c = formatNumber(d.child.data.count);
 						const t = formatNumber(stackData[0].node.data.count);
