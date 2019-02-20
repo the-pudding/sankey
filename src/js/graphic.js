@@ -401,7 +401,9 @@ function nextQuestion() {
 	const { id } = PEOPLE_QUEUE.pop();
 
 	if (!PEOPLE_QUEUE.length) $nav.select('.btn--new').property('disabled', true);
-	showQuestion(id);
+
+	if (!db.getGuess(id)) showQuestion(id);
+	else nextQuestion();
 }
 
 function init() {
