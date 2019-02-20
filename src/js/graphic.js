@@ -423,7 +423,7 @@ function init() {
 				.html(SVG_VOLUME);
 
 			showTutorial('britney');
-			if (db.hasResults()) handleAllClick(true);
+			if (db.getReturner()) handleAllClick(true);
 			else nextQuestion();
 		})
 		.catch(console.error);

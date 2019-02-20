@@ -70,10 +70,12 @@ function clear() {
 	localStorage.removeItem('pudding_sankey_id');
 	localStorage.removeItem('pudding_sankey_guess');
 	localStorage.removeItem('pudding_sankey_results');
+	localStorage.removeItem('pudding_sankey_returner');
 }
 
 function setup() {
 	if (window.location.host.includes('localhost')) clear();
+	clear();
 	userData = setupUserData();
 	if (!userData.results) connect();
 	// console.log({ userData });
