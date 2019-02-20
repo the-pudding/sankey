@@ -157,7 +157,7 @@ function finishData() {
 	db.setReturner();
 }
 
-function handleAllClick() {
+function handleAllClick(noscroll) {
 	db.finish();
 
 	finishData();
@@ -193,6 +193,9 @@ function handleAllClick() {
 
 		return chart;
 	});
+
+	console.log({ noscroll });
+	if (noscroll) return false;
 
 	const { top } = $all.node().getBoundingClientRect();
 	const y = window.scrollY + top;
@@ -255,7 +258,7 @@ function createQuestion(d) {
 		.append('button')
 		.attr('class', 'btn btn--all')
 		.text('Skip To Results')
-		.on('click', handleAllClick);
+		.on('click', d => handleAllClick());
 
 	$question.append('p').attr('class', 'question__message');
 
@@ -420,7 +423,7 @@ function init() {
 				.html(SVG_VOLUME);
 
 			showTutorial('britney');
-			if (db.hasResults()) handleAllClick();
+			if (db.hasResults()) handleAllClick(true);
 			else nextQuestion();
 		})
 		.catch(console.error);
