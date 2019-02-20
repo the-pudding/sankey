@@ -26,8 +26,11 @@ svg.pudding-chart
 				fill $correct-dark
 			&.is-guess .text-name
 				fill $wrong-dark
+			.text-number
+				display block
 		.text-count.is-visible
 			display block
+	
 		
 		
 
@@ -76,7 +79,7 @@ svg.pudding-chart
 		
 		text
 			font-family $sans
-			font-weight bold
+			font-weight 700
 			text-transform uppercase
 
 		.text--bg
@@ -112,12 +115,21 @@ svg.pudding-chart
 		
 		&.is-guess
 			display block
-		
-			.text-name
-				fill $guess-dark
 
 		text
 			font-family $sans
-			font-weight bold
+			font-weight 700
 			text-transform uppercase
 			set-type-size(small)
+			stroke none
+
+		.text-number
+			display none
+			font-weight 700
+			set-type-size(small)
+			fill $gray-dark
+
+		.text-name
+			fill $guess-dark
+
+		

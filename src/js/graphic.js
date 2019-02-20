@@ -364,7 +364,7 @@ function init() {
 				.append('span')
 				.html(SVG_VOLUME);
 
-			showTutorial('britney');
+			// showTutorial('britney');
 			if (db.getResults()) handleAllClick();
 			else nextQuestion();
 		})

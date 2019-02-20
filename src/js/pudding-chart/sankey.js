@@ -45,6 +45,12 @@ d3.selection.prototype.puddingChartSankey = function init() {
 			return d3.stack().keys(Object.keys(xobj))([xobj]);
 		}
 
+		function formatNumber(x) {
+			return d3
+				.format('.3s')(x)
+				.replace(/\.0*/g, '');
+		}
+
 		function customPoints(pts) {
 			const link = d3
 				.linkHorizontal()
@@ -306,17 +312,13 @@ d3.selection.prototype.puddingChartSankey = function init() {
 						return tL + midPosChild + delta + fs;
 					})
 					.attr('x', linkWidth / 2)
-					.text(d =>
-						d3
-							.format('.3s')(d.child.data.count)
-							.replace(/\.0*/g, '')
-					)
+					.text(d => formatNumber(d.child.data.count))
 					.classed('is-visible', d => d.child.data.percent >= 0.2);
 
 				function enterLabel(sel) {
 					const $el = sel.append('g').attr('class', 'label');
 					$el.call(createText, { name: 'name', mod: 'fg' });
-					$el.call(createText, { name: 'count', mod: 'fg' });
+					$el.call(createText, { name: 'number', mod: 'fg' });
 					return $el;
 				}
 
@@ -367,10 +369,15 @@ d3.selection.prototype.puddingChartSankey = function init() {
 					});
 
 				$label
-					.selectAll('.text-count')
+					.selectAll('.text-number')
 					.attr('text-anchor', 'start')
-					.data((d, i, n) => d3.range(n.length).map(() => ({ ...d })));
-				// .text(d => (d.child.data.correct ? 'Correct' : 'You'));
+					.data((d, i, n) => d3.range(n.length).map(() => ({ ...d })))
+					.attr('y', -MIN_FONT_SIZE)
+					.text(d => {
+						const c = formatNumber(d.child.data.count);
+						const t = formatNumber(stackData[0].node.data.count);
+						return `${c} of ${t}`;
+					});
 
 				return Chart;
 			},
