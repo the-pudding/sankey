@@ -246,7 +246,11 @@ d3.selection.prototype.puddingChartSankey = function init() {
 
 				const enterNode = sel => {
 					const $el = sel.append('g').attr('class', 'node');
-					$el.append('rect').attr('width', w);
+					$el
+						.append('rect')
+						.attr('width', d =>
+							shouldTutorial && d.data.key === ' bri' ? w * 2.5 : w
+						);
 					return $el;
 				};
 
