@@ -6,6 +6,25 @@
 		max-width 60rem
 		margin 0 auto
 		text-align center
+		text-transform uppercase
+		font-family $sans
+		span
+			display block
+			line-height 1.1
+			letter-spacing 0.05em
+			&:nth-child(1)
+				font-weight 200
+				set-type-size(xxx-large, false)
+			&:nth-child(2)
+				font-weight 700
+				set-type-size(xxxxx-large, false)
+				background -webkit-linear-gradient(45deg, darken($wrong-med, 5), darken($correct-med, 5) 80%)
+				-webkit-background-clip text
+				-webkit-text-fill-color transparent
+			&:nth-child(3)
+				font-weight 500
+				set-type-size(xxxxx-large, false)
+				letter-spacing 0.1em
 		
 	&__dek
 		max-width $column-width
@@ -18,7 +37,11 @@
 		margin 0 auto
 		margin-top 1rem
 		text-align center
-	
+		text-transform uppercase
+		letter-spacing 0.05em
+		a
+			border none
+			letter-spacing 0.05em
 	&__time
 		display block
 		max-width $column-width

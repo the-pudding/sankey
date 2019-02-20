@@ -1,13 +1,6 @@
 // https://bl.ocks.org/timelyportfolio/a6f2f931935025b0476ea6180d348c59
 
-/*
- USAGE (example: line chart)
- 1. c+p this template to a new file (line.js)
- 2. change puddingChartName to puddingChartLine
- 3. in graphic file: import './pudding-chart/line'
- 4a. const charts = d3.selectAll('.thing').data(data).puddingChartLine();
- 4b. const chart = d3.select('.thing').datum(datum).puddingChartLine();
-*/
+import C from '../color';
 
 d3.selection.prototype.puddingChartSankey = function init() {
 	function createChart(el) {
@@ -17,7 +10,9 @@ d3.selection.prototype.puddingChartSankey = function init() {
 		const MAX_CHARS = 'Antetokounmpo'.length + 2;
 
 		const scaleFont = d3.scaleLinear();
-		const scaleColor = d3.scaleSequential().interpolator(d3.interpolateWarm);
+		const scaleColorPurple = d3.scaleLinear().range([C.purple, C.purpleLight]);
+		const scaleColorBlue = d3.scaleLinear().range([C.blue, C.blueLight]);
+		const scaleColorPink = d3.scaleLinear().range([C.pink, C.pinkLight]);
 
 		const $sel = d3.select(el);
 		let data = $sel.datum();
@@ -181,7 +176,8 @@ d3.selection.prototype.puddingChartSankey = function init() {
 					)
 					.classed('is-guess', d => d.data.guess)
 					.classed('is-correct', d => d.data.correct)
-					.classed('is-visible', d => d.depth <= guessDepth);
+					.classed('is-visible', d => d.depth <= guessDepth)
+					.classed('is-leaf', d => !d.children);
 
 				$node
 					.select('rect')
@@ -209,17 +205,17 @@ d3.selection.prototype.puddingChartSankey = function init() {
 					.data(stackData, d => d.child.id)
 					.join('path')
 					.attr('class', 'link')
-					.style('fill', d => {
-						const col = scaleColor(d.child.depth);
-						const c = d3.hsl(col);
-						c.s *= 0.125;
-						c.l *= 0.825;
-						c.l = Math.max(0, c.l);
-						c.s = Math.max(0, c.s);
-						if (shouldReveal && !d.child.data.correct) return c.hex();
-						if (shouldTutorial && !d.child.data.correct) return c.hex();
-						return col;
-					})
+					// .style('fill', d => {
+					// 	const col = scaleColorBlue(d.child.depth);
+					// 	const c = d3.hsl(col);
+					// 	c.s = 0;
+					// 	// c.l *= 0.5;
+					// 	// c.l = Math.max(0, c.l);
+					// 	// c.s = Math.max(0, c.s);
+					// 	if (shouldReveal && !d.child.data.correct) return c.hex();
+					// 	if (shouldTutorial && !d.child.data.correct) return c.hex();
+					// 	return col;
+					// })
 					.classed('is-guess', d => d.child.data.guess)
 					.classed('is-correct', d => d.child.data.correct)
 					.classed('is-visible', d => d.node.depth <= guessDepth)
@@ -353,7 +349,9 @@ d3.selection.prototype.puddingChartSankey = function init() {
 			correct(val) {
 				if (!arguments.length) return correctName;
 				correctName = ` ${val}`;
-				scaleColor.domain([0, correctName.length]);
+				scaleColorPurple.domain([0, correctName.length]);
+				scaleColorBlue.domain([0, correctName.length]);
+				scaleColorPink.domain([0, correctName.length]);
 				return Chart;
 			}
 		};

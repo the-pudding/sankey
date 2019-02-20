@@ -4,27 +4,53 @@ svg.pudding-chart
 	user-select none
 	
 	&.show-result
-		.node, .link, .letter
+		.node:not(.is-leaf), .link, .letter
 			display block
+		.node.is-guess rect
+			fill $wrong-med
+		.node.is-correct rect
+			fill $correct-med
+		.link.is-guess
+			fill $wrong
+		.link.is-correct
+			fill $correct
 		.letter.is-visible
 			display block
-		.letter.is-correct text
-			opacity 1
+		.letter.is-guess .text--fg
+			fill $wrong-dark
+		.letter.is-correct .text--fg
+			fill $correct-dark
+		.text-count.is-visible
+			display block
+		
+
+	&.show-tutorial
+		.node.is-guess rect
+			fill $wrong-med
+		.node.is-correct rect
+			fill $correct-med
+		.letter.is-visible
+			display block
+		.link.is-correct
+			fill $correct
+		.letter.is-correct .text--fg
+			fill $correct-dark
 		.text-count.is-visible
 			display block
 
 	// strip of line divider
 	.node
 		display none
-		&.is-visible
+		&.is-visible:not(.is-leaf)
 			display block
 		&.is-guess
-			// 
+			rect
+				fill $guess-med
 		&.is-correct
 			// 
 
 		rect
-			opacity 0
+			fill $gray
 	
 	
 	// the text
@@ -34,15 +60,13 @@ svg.pudding-chart
 			// display block
 		&.is-guess
 			display block
-			text
-				opacity 1
-		// &.is-correct
+			.text--fg
+				fill $guess-dark
 		
 		text
 			font-family $sans
 			font-weight bold
 			text-transform uppercase
-			opacity 0.75
 
 		.text--bg
 			fill none
@@ -51,7 +75,7 @@ svg.pudding-chart
 			stroke-opacity 0.67
 		
 		.text--fg
-			fill $fg
+			fill $gray-dark
 
 		.text-count
 			set-type-size(x-small)
@@ -63,18 +87,11 @@ svg.pudding-chart
 	.link
 		stroke none
 		display none
+		fill $gray-light
 		&.is-visible
 			display block
 		&.is-guess
-			// 
+			fill $guess
 		&.is-correct
 			// 
 
-
-svg.show-tutorial
-	.letter.is-visible
-		display block
-	.letter.is-correct text
-		opacity 1
-	.text-count.is-visible
-		display block

@@ -11,8 +11,9 @@ let connected = false;
 
 const hasStorage = checkStorage('localStorage');
 
-function getGuess() {
-	return userData.guess;
+function getGuess(id) {
+	if (userData.guess) return userData.guess[id];
+	return null;
 }
 
 function getResults() {

@@ -108,7 +108,8 @@ function handleAllClick() {
 		const sankeyData = generateSankeyData({
 			data: allData[id],
 			correct: id,
-			total
+			total,
+			guess: db.getGuess(id) || ''
 		});
 
 		const $person = $all.append('div').attr('class', 'person');
@@ -175,6 +176,7 @@ function createQuestion(d) {
 	// RESPONSE
 	const $response = $question.append('div').attr('class', 'question__response');
 	const start = d.pos === 0 ? first.charAt(0) : last.charAt(0);
+
 	$response
 		.append('input')
 		.attr('maxlength', d.id.length + 2)
@@ -184,7 +186,7 @@ function createQuestion(d) {
 	$response
 		.append('button')
 		.attr('class', 'btn')
-		.text('I Think I’ve Got It');
+		.text('Submit');
 
 	// FIGURE
 	$question.append('figure').attr('class', 'question__figure');

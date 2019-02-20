@@ -2,18 +2,26 @@
 html
 	scroll-behavior smooth
 
+body
+	font-family $sans
+
+		
 .prose p
-	set-type-size(medium, true)
+	set-type-size(large, true)
 
 .prose__hed
 	margin 0
 	margin-top 3rem
 	set-type-size(x-large, true)
 	font-weight 700
+	text-align center
+	text-transform uppercase
+	letter-spacing 0.05em
 
 button
 	padding 1rem
-	border 1px solid $fg
+	border 2px solid $gray
+	border-radius 4px
 	background $off-white
 	font-family $sans
 
@@ -27,3 +35,7 @@ button
 	&:disabled
 		opacity 0.5
 		cursor not-allowed
+
+
+#prelude p
+	set-type-size(x-large, true)
