@@ -175,6 +175,7 @@ function finishData() {
 }
 
 function handleAllClick(noscroll) {
+	d3.select('.quiz__below').remove();
 	db.finish();
 
 	finishData();
@@ -454,6 +455,8 @@ function init() {
 			showTutorial('britney');
 			if (db.getReturner()) handleAllClick(true);
 			else nextQuestion();
+
+			d3.select('.quiz__below button').on('click', handleAllClick);
 		})
 		.catch(console.error);
 }
