@@ -270,18 +270,22 @@ function createQuestion(d) {
 	// RESPONSE
 	const $response = $question.append('div').attr('class', 'question__response');
 	$nav = $question.append('div').attr('class', 'question__nav is-visible');
-	$nav
-		.append('button')
-		.attr('class', 'btn btn--new')
-		.text('Show Me Another')
-		.on('click', handleNewClick);
+
+	if (PEOPLE_QUEUE.length > 1) {
+		$nav
+			.append('button')
+			.attr('class', 'btn btn--new')
+			.text('Show Me Another')
+			.on('click', handleNewClick);
+	}
+
 	$nav
 		.append('button')
 		.attr('class', 'btn btn--all')
 		.text('Skip To Results')
 		.on('click', d => handleAllClick());
 
-	$nav.append('p').text(`${PEOPLE_QUEUE.length} remaining`);
+	$nav.append('p').text(`${PEOPLE_QUEUE.length - 1} remaining`);
 
 	$question.append('p').attr('class', 'question__message');
 

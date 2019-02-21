@@ -62,8 +62,7 @@ function connect() {
 	};
 	firebaseApp = firebase.initializeApp(config);
 	firebaseDB = firebaseApp.database();
-	// TODO remove to store
-	// connected = true;
+	connected = true;
 }
 
 function clear() {
@@ -99,9 +98,8 @@ function getSubmissions(data) {
 	const output = {};
 	Object.keys(data).forEach(d => {
 		const g = data[d];
-
 		// minimum character length
-		const minChars = Math.floor(d.length * 0.75);
+		const minChars = Math.floor(d.length * 0.67);
 		if (g.length < minChars) return false;
 
 		const hasSwear = SWEAR.find(s => g.includes(s));
@@ -110,6 +108,7 @@ function getSubmissions(data) {
 		// add to submit list
 		output[d] = g;
 	});
+	return output;
 }
 
 function update({ key, value }) {
@@ -121,7 +120,7 @@ function update({ key, value }) {
 		);
 	const { id, guess } = userData;
 	const submissions = getSubmissions(guess);
-	if (connected) {
+	if (Object.keys(submissions).length && connected) {
 		firebaseDB
 			.ref(id)
 			.set({ guess: submissions })
