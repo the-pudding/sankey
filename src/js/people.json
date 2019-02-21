@@ -1,42 +1,49 @@
 [
   {
     "id": "britney",
+    "description": "",
     "pos": 0,
     "fullname": ["britney", "spears"],
     "guess": ""
   },
   {
     "id": "antetokounmpo",
+    "description": "NBA Player",
     "pos": 1,
     "fullname": ["Giannis", "Antetokounmpo"],
     "guess": "anttatakoupo"
   },
   {
     "id": "kaepernick",
+    "description": "NFL Player",
     "pos": 1,
     "fullname": ["Colin", "Kaepernick"],
     "guess": "kapernick"
   },
   {
     "id": "picabo",
+    "description": "Former Olympic Ski Racer",
     "pos": 0,
     "fullname": ["Picabo", "Street"],
     "guess": "peekaboo"
   },
   {
     "id": "galifianakis",
+    "description": "Actor",
     "pos": 1,
     "fullname": ["Zach", "Galifianakis"],
     "guess": "galiphinakas"
   },
   {
     "id": "deschanel",
+    "description": "Actress",
     "pos": 1,
     "fullname": ["Zooey", "Deschanel"],
     "guess": "dachanel"
   },
   {
     "id": "mcconaughey",
+    "description": "Actor",
     "pos": 1,
     "fullname": ["Matthew", "McConaughey"],
     "guess": "mcconaghay",
@@ -44,12 +51,14 @@
   },
   {
     "id": "poehler",
+    "description": "Actress",
     "pos": 1,
     "fullname": ["Amy", "Poehler"],
     "guess": "poller"
   },
   {
     "id": "macaulay",
+    "description": "Actor",
     "pos": 0,
     "fullname": ["Macaulay", "Culkin"],
     "guess": "mculley"
@@ -57,56 +66,58 @@
 
   {
     "id": "morissette",
+    "description": "Musician",
     "pos": 1,
     "fullname": ["Alanis", "Morissette"],
     "guess": "morrisette"
   },
   {
     "id": "mclachlan",
+    "description": "Musician",
     "pos": 1,
     "fullname": ["Sarah", "McLachlan"],
     "guess": "mcglaughlin"
   },
   {
     "id": "palahniuk",
+    "description": "Author (Fight Club)",
     "pos": 1,
     "fullname": ["Chuck", "Palahniuk"],
     "guess": "palaneuk"
   },
   {
     "id": "shyamalan",
+    "description": "Filmmaker",
     "pos": 1,
     "fullname": ["M. Night", "Shyamalan"],
     "guess": "shamalaughn"
   },
   {
     "id": "mcgwire",
+    "description": "Former MLB Player",
     "pos": 1,
     "fullname": ["Mark", "McGwire"],
     "guess": "mcguire"
   },
   {
     "id": "johansson",
+    "description": "Actress",
     "pos": 1,
     "fullname": ["Scarlett", "Johansson"],
     "guess": "johanssan"
   },
   {
     "id": "minaj",
+    "description": "rapper",
     "pos": 1,
     "fullname": ["Nicki", "Minaj"],
     "guess": "minage"
   },
   {
     "id": "labeouf",
+    "description": "Actor",
     "pos": 1,
     "fullname": ["Shia", "LaBeouf"],
     "guess": "labeuff"
-  },
-  {
-    "id": "eilish",
-    "pos": 1,
-    "fullname": ["Billie", "Eilish"],
-    "guess": "ilish"
   }
 ]

@@ -1,10 +1,16 @@
 #quiz
 	padding-bottom 5rem
-	min-height 420px
+
+	.prose span
+		// display block
+		// set-type-size(root, true)
+		color $wrong-dark
+		// font-style italic
 
 	.quiz__content
 		padding-top 1rem
 		opacity 0
+		min-height 480px
 
 	.question__figure
 		max-width 60rem
@@ -13,6 +19,15 @@
 	.question__person
 		max-width 20rem
 		margin 0 auto
+		p
+			margin 0
+			set-type-size(small, false)
+			line-height 1
+			text-align center
+			margin-top 0.5em
+			text-transform uppercase
+			color $gray-dark
+			letter-spacing 0.02em
 		img
 			max-width 8rem
 			margin 0 auto
@@ -21,10 +36,12 @@
 			margin 0 auto
 			margin-top 1rem
 			display block
-			font-family $mono
+			// font-family $mono
 			text-transform uppercase
 			padding 0.5rem
 			line-height 1
+		span.is-guess
+			font-family $mono
 		svg
 			vertical-align text-bottom
 			width 1.5rem
@@ -38,7 +55,7 @@
 		justify-content center
 		padding-top 2rem
 		input
-			font-family $mono
+			// font-family $mono
 			font-size 32px
 			line-height 32px
 			padding 8px
@@ -73,6 +90,15 @@
 		visibility hidden
 		&.is-visible
 			visibility visible
+		p
+			margin 0
+			font-weight 700
+			color $gray-dark
+			text-transform uppercase
+			set-type-size(small, false)
+			text-align right
+			flex-grow 1
+			letter-spacing 0.02em
 		button
 			background transparent
 			border none

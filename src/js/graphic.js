@@ -17,7 +17,7 @@ const SVG_VOLUME =
 	'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-volume-2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>';
 
 const $audioTutorial = d3.select('.audio--tutorial');
-const $audioQuiz = d3.select('audio--quiz');
+const $audioQuiz = d3.select('.audio--quiz');
 const $quiz = d3.select('#quiz');
 const $quizContent = $quiz.select('.quiz__content');
 const $tutorialContent = d3.select('.tutorial__content');
@@ -238,6 +238,8 @@ function createQuestion(d) {
 		.attr('src', `assets/images/${d.id}@2x.jpg`)
 		.attr('alt', d.id);
 
+	$person.append('p').text(d.description);
+
 	const $button = $person.append('button').attr('class', 'btn');
 	const [first, last] = d.fullname;
 	const firstHide = d3
@@ -252,10 +254,12 @@ function createQuestion(d) {
 	$button
 		.append('span')
 		.attr('class', 'first')
+		.classed('is-guess', d.pos === 0)
 		.text(d.pos === 0 ? firstHide : first);
 	$button
 		.append('span')
 		.attr('class', 'last')
+		.classed('is-guess', d.pos === 1)
 		.text(d.pos === 1 ? lastHide : last);
 	$button
 		.append('span')
@@ -275,6 +279,8 @@ function createQuestion(d) {
 		.attr('class', 'btn btn--all')
 		.text('Skip To Results')
 		.on('click', d => handleAllClick());
+
+	$nav.append('p').text(`${PEOPLE_QUEUE.length} remaining`);
 
 	$question.append('p').attr('class', 'question__message');
 
@@ -421,7 +427,8 @@ function cleanAllData(data) {
 function nextQuestion() {
 	const { id } = PEOPLE_QUEUE.pop();
 
-	if (!PEOPLE_QUEUE.length) $nav.select('.btn--new').property('disabled', true);
+	if (!PEOPLE_QUEUE.length) handleAllClick();
+
 	if (!db.getGuess(id)) showQuestion(id);
 	else nextQuestion();
 }
