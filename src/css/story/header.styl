@@ -9,7 +9,10 @@ header
 	a.logo
 		display block
 		border none
-		max-width 1.5rem
+		max-width 1.25rem
+		+mq('bp-5')
+			max-width 1.5rem
+
 
 		svg
 			fill $off-black
@@ -19,11 +22,14 @@ header
 header.is-sticky
 	position fixed
 	transform translate3d(0,0,0)
-	background-color transparent
 	height 3rem
 	display flex
 	align-items center
 	pointer-events none
+	box-shadow 0 0 3px 1px $gray-dark
+	+mq('bp-5')
+		background-color transparent
+		box-shadow none
 
 	a.logo
 		margin-left 0.75rem

@@ -1,6 +1,6 @@
 #quiz
 	padding-bottom 5rem
-
+	
 	.prose span
 		// display block
 		// set-type-size(root, true)
@@ -52,8 +52,13 @@
 
 	.question__response
 		display flex
+		flex-direction column
 		justify-content center
 		padding-top 2rem
+		max-width 38rem
+		margin 0 auto
+		+mq('bp-4')
+			flex-direction row
 		input
 			// font-family $mono
 			font-size 32px
@@ -61,10 +66,13 @@
 			padding 8px
 			letter-spacing 8px
 			text-transform uppercase
-			width 28rem
 			display block
 			font-weight bold
 			color $guess-dark
+			
+			+mq('bp-4')
+				width 28rem
+
 			&:disabled
 				cursor not-allowed
 				opacity 0.67
@@ -73,10 +81,14 @@
 				&.is-correct
 					color $correct-dark
 		button
-			margin-left 0.5rem
 			padding 1rem
 			font-family $sans
-			width 10rem
+			margin-top 1rem
+			width 100%
+			+mq('bp-4')
+				margin-top 0
+				width 10rem
+				margin-left 0.5rem
 			&.is-next
 				background-color $gray-light
 				// color $off-white

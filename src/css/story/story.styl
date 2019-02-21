@@ -6,12 +6,14 @@ body
 	font-family $sans
 
 main
+	padding 0 0.75rem
 	+mq('bp-4')
 		padding 0 3rem
 .prose p
 	set-type-size(large, true)
 	letter-spacing 0.005em
-	text-align justify
+	+mq('bp-3')
+		text-align justify
 
 .prose__hed
 	margin 0
@@ -41,8 +43,10 @@ button
 		cursor not-allowed
 
 
-#prelude p
-	set-type-size(x-large, true)
+#prelude
+	margin-top 3rem
+	p
+		set-type-size(x-large, true)
 
 #method
 	max-width 36rem
