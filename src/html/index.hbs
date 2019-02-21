@@ -62,6 +62,14 @@
 			</div>
 			<div class='all__content'></div>
 		</section>
+		<section id='method'>
+			<div class='prose'>
+				<h3 class='prose__hed'>{{{doc.methodHed}}}</h3>
+				{{#each doc.method}}
+				<p>{{{value}}}</p>
+				{{/each}}
+			</div>
+		</section>
 		<audio src='assets/audio/britney.mp3' class='hide-display audio--tutorial'></audio>
 		<audio class='hide-display audio--quiz'></audio>
 
