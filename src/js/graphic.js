@@ -39,6 +39,15 @@ function cleanInput({ val, start }) {
 	return clean.length && clean.charAt(0) === start ? clean : start;
 }
 
+function handleFocus() {
+	const { top } = $quiz
+		.select('.question__response')
+		.node()
+		.getBoundingClientRect();
+	const y = window.scrollY + top;
+	window.scrollTo(0, y);
+}
+
 function handleInputChange() {
 	const $input = d3.select(this);
 	const val = this.value.toLowerCase();
@@ -124,13 +133,21 @@ function handleBritneyClick() {
 }
 
 function handleNewClick() {
-	$quizContent.select('.question').remove();
-	if (PEOPLE_QUEUE.length) {
-		nextQuestion();
-		const { top } = $quizContent.node().getBoundingClientRect();
-		const y = window.scrollY + top;
-		window.scrollTo(0, y);
-	}
+	$quizContent
+		.transition()
+		.duration(250)
+		.ease(d3.easeCubicInOut)
+		.style('opacity', 0)
+		.on('end', () => {
+			$quizContent.select('.question').remove();
+
+			if (PEOPLE_QUEUE.length) {
+				nextQuestion();
+				const { top } = $quizContent.node().getBoundingClientRect();
+				const y = window.scrollY + top;
+				window.scrollTo(0, y);
+			}
+		});
 }
 
 function finishData() {
@@ -194,7 +211,6 @@ function handleAllClick(noscroll) {
 		return chart;
 	});
 
-	console.log({ noscroll });
 	if (noscroll) return false;
 
 	const { top } = $all.node().getBoundingClientRect();
@@ -269,14 +285,13 @@ function createQuestion(d) {
 		.attr('maxlength', d.id.length + 2)
 		.attr('spellcheck', false)
 		.attr('data-start', start.toLowerCase())
-		.attr('value', start.toLowerCase());
+		.attr('value', start.toLowerCase())
+		.on('focus', handleFocus);
 
 	$response
 		.append('button')
 		.attr('class', 'btn')
 		.text('I Think I’ve Got It');
-
-	$response.appe;
 
 	// FIGURE
 	$question.append('figure').attr('class', 'question__figure');
@@ -326,6 +341,12 @@ function showQuestion(id) {
 	$question
 		.select('.question__response button')
 		.on('click', handleResponseClick);
+
+	$quizContent
+		.transition()
+		.duration(250)
+		.ease(d3.easeCubicInOut)
+		.style('opacity', 1);
 }
 
 function stepTutorial({ id, depth = 1 }) {
@@ -401,7 +422,6 @@ function nextQuestion() {
 	const { id } = PEOPLE_QUEUE.pop();
 
 	if (!PEOPLE_QUEUE.length) $nav.select('.btn--new').property('disabled', true);
-
 	if (!db.getGuess(id)) showQuestion(id);
 	else nextQuestion();
 }
