@@ -430,8 +430,7 @@ function cleanAllData(data) {
 }
 
 function nextQuestion() {
-	// const { id } = PEOPLE_QUEUE.pop();
-	const id = 'galifianakis'
+	const { id } = PEOPLE_QUEUE.pop();
 	if (!PEOPLE_QUEUE.length) handleAllClick();
 
 	if (!db.getGuess(id)) showQuestion(id);

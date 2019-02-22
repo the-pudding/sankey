@@ -6,13 +6,7 @@
     "fullname": ["britney", "spears"],
     "guess": ""
   },
-  {
-    "id": "antetokounmpo",
-    "description": "NBA Player",
-    "pos": 1,
-    "fullname": ["Giannis", "Antetokounmpo"],
-    "guess": "anttatakoupo"
-  },
+
   {
     "id": "kaepernick",
     "description": "NFL Player",
