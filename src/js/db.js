@@ -75,7 +75,6 @@ function clear() {
 
 function setup() {
 	if (window.location.host.includes('localhost')) clear();
-	clear();
 	userData = setupUserData();
 	if (!userData.results) connect();
 	// console.log({ userData });
