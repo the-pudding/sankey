@@ -1,9 +1,18 @@
 svg.pudding-chart
 	margin 0 auto
-	display block
 	user-select none
+	visibility hidden
+	overflow hidden
+	max-height 10rem
+
+
+	+mq('bp-4')
+		visibility visible
+		max-height none
 	
 	&.show-result
+		visibility visible
+		max-height 100%
 		.node:not(.is-leaf), .link, .letter
 			display block
 		.node.is-guess rect
@@ -30,12 +39,15 @@ svg.pudding-chart
 				.text-number
 					display block
 		.text-count.is-visible
-			display block
+			+mq('bp-4')
+				display block
 	
 		
 		
 
 	&.show-tutorial
+		visibility visible
+		max-height 100%
 		.node.is-guess rect
 			fill $wrong-med
 		.node.is-correct rect
@@ -47,7 +59,8 @@ svg.pudding-chart
 		.letter.is-correct .text--fg
 			fill $correct-dark
 		.text-count.is-visible
-			display block
+			+mq('bp-4')
+				display block
 		.label
 			&.is-correct .text-name
 				fill $correct-dark
@@ -141,9 +154,11 @@ svg.pudding-chart
 		text
 			fill $gray-dark
 			font-weight 500
-			set-type-size(small)
+			set-type-size(x-small)
 			text-transform uppercase
 			font-weight 700
+			+mq('bp-4')
+				set-type-size(small)
 		
 		.note-line
 			display none

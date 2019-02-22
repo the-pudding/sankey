@@ -6,11 +6,15 @@ d3.selection.prototype.puddingChartSankey = function init() {
 	function createChart(el) {
 		const DEFAULT_WIDTH = 2;
 		const MIN_FONT_SIZE = 16;
-		const MARGIN = MIN_FONT_SIZE;
-		const MARGIN_RIGHT = 60;
 		const OFF_H = 144;
-		const MAX_CHARS = 'Antetokounmpo'.length + 2;
+		const MAX_CHARS = 'galifianakis'.length + 2;
 
+		const margin = {
+			top: MIN_FONT_SIZE,
+			bottom: MIN_FONT_SIZE,
+			left: 0,
+			right: MIN_FONT_SIZE * 2.5
+		};
 		const scaleFont = d3.scaleLinear();
 		const scaleColorPurple = d3.scaleLinear().range([C.purple, C.purpleLight]);
 		const scaleColorBlue = d3.scaleLinear().range([C.blue, C.blueLight]);
@@ -137,7 +141,7 @@ d3.selection.prototype.puddingChartSankey = function init() {
 						// title: d.year,
 						label: `${percent} of people type "n" at this point`,
 						padding: 6,
-						wrap: 120
+						wrap: width < 600 ? 80 : 120
 						// bgPadding: { top: 8, left: 8, right: 8, bottom: 8 }
 					},
 					data: { x, y },
@@ -186,16 +190,16 @@ d3.selection.prototype.puddingChartSankey = function init() {
 				// const offR = d3.select('.question__response').node().offsetHeight;
 
 				const h = Math.min(Math.max(window.innerHeight - OFF_H, 420), 640);
-				
-				linkWidth = Math.floor((w - MARGIN * 2) / MAX_CHARS);
+
+				linkWidth = Math.floor((w - margin.right - margin.right) / MAX_CHARS);
 
 				maxFontSize = Math.max(
 					MIN_FONT_SIZE * 1.25,
 					Math.floor(linkWidth * 0.67)
 				);
 
-				width = w - MARGIN - MARGIN_RIGHT;
-				height = h - MARGIN * 2;
+				width = w - margin.left - margin.right;
+				height = h - margin.top - margin.bottom;
 				const lenCorrect = correctName.length - 1;
 				const lenGuess = guessDepth + 1;
 
@@ -208,15 +212,18 @@ d3.selection.prototype.puddingChartSankey = function init() {
 				const offsetWidth = linkWidth * count;
 
 				$svg
-					.attr('width', width + MARGIN + MARGIN_RIGHT)
-					.attr('height', height + MARGIN * 2);
+					.attr('width', width + margin.left + margin.right)
+					.attr('height', height + margin.top + margin.bottom);
 
 				// center
-				const offsetX = (width - offsetWidth) / 2;
+				const offsetX = (width - offsetWidth) / 2 - margin.right / 2;
 
 				$svg
 					.select('g')
-					.attr('transform', `translate(${MARGIN + offsetX}, ${MARGIN})`);
+					.attr(
+						'transform',
+						`translate(${margin.left + offsetX}, ${margin.top})`
+					);
 
 				return Chart;
 			},

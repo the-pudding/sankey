@@ -61,17 +61,18 @@
 			flex-direction row
 		input
 			// font-family $mono
-			font-size 32px
-			line-height 32px
-			padding 8px
-			letter-spacing 8px
 			text-transform uppercase
 			display block
 			font-weight bold
 			color $guess-dark
+			font-size 20px
 			
 			+mq('bp-4')
 				width 28rem
+				font-size 32px
+				line-height 32px
+				padding 8px
+				letter-spacing 8px
 
 			&:disabled
 				cursor not-allowed
@@ -83,7 +84,7 @@
 		button
 			padding 1rem
 			font-family $sans
-			margin-top 1rem
+			margin-top 0.5rem
 			width 100%
 			+mq('bp-4')
 				margin-top 0
@@ -97,9 +98,13 @@
 		margin 0 auto
 		display flex
 		max-width 38rem
-		margin-top 0.5rem
+		margin-top 1rem
 		// justify-content flex-end
 		visibility hidden
+
+		+mq('bp-4')
+			margin-top 0.5rem
+
 		&.is-visible
 			visibility visible
 		p
@@ -107,10 +112,12 @@
 			font-weight 700
 			color $gray-dark
 			text-transform uppercase
-			set-type-size(small, false)
+			set-type-size(x-small, false)
 			text-align right
 			flex-grow 1
 			letter-spacing 0.02em
+			+mq('bp-4')
+				set-type-size(small, false)
 		button
 			background transparent
 			border none
@@ -119,6 +126,14 @@
 			border-bottom 1px solid $gray
 			margin-right 1rem
 			color $gray-dark
+			set-type-size(small, false)
+			
+			+mq('bp-4')
+				set-type-size(root, false)
+
+			&:hover
+				background-color lighten($correct, 15)
+				box-shadow none
 
 
 	.question__message

@@ -24,12 +24,18 @@ main
 	text-transform uppercase
 	letter-spacing 0.05em
 
+a:hover
+	background-color lighten($correct, 15)
+
 button
 	padding 1rem
 	border 2px solid $gray
 	border-radius 4px
 	background $off-white
 	font-family $sans
+	&:hover
+		+mq('bp-4')
+			box-shadow 0 0 5px $correct
 
 	&.button--skip
 		border none
@@ -42,11 +48,12 @@ button
 		opacity 0.5
 		cursor not-allowed
 
-
 #prelude
 	margin-top 3rem
 	p
-		set-type-size(x-large, true)
+		set-type-size(large, true)
+		+mq('bp-4')
+			set-type-size(x-large, true)
 
 #method
 	max-width 36rem
