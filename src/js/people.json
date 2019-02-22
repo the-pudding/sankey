@@ -6,34 +6,37 @@
     "fullname": ["britney", "spears"],
     "guess": ""
   },
-
   {
     "id": "kaepernick",
     "description": "NFL Player",
     "pos": 1,
     "fullname": ["Colin", "Kaepernick"],
-    "guess": "kapernick"
+    "guess": "kapernick",
+    "phonetic": "ˈkæpərnɪk"
   },
   {
     "id": "picabo",
     "description": "Former Olympic Ski Racer",
     "pos": 0,
     "fullname": ["Picabo", "Street"],
-    "guess": "peekaboo"
+    "guess": "peekaboo",
+    "phonetic": "ˈpiːkəbuː"
   },
   {
     "id": "galifianakis",
     "description": "Actor",
     "pos": 1,
     "fullname": ["Zach", "Galifianakis"],
-    "guess": "galiphinakas"
+    "guess": "galiphinakas",
+    "phonetic": "ˌɡælɪfəˈnækɪs"
   },
   {
     "id": "deschanel",
     "description": "Actress",
     "pos": 1,
     "fullname": ["Zooey", "Deschanel"],
-    "guess": "dachanel"
+    "guess": "dachanel",
+    "phonetic": "ˌdeɪʃəˈnɛl"
   },
   {
     "id": "mcconaughey",
@@ -41,21 +44,24 @@
     "pos": 1,
     "fullname": ["Matthew", "McConaughey"],
     "guess": "mcconaghay",
-    "phonetic": "/məˈkɒnəheɪ/"
+    "phonetic": "",
+    "phonetic": "məˈkɒnəheɪ"
   },
   {
     "id": "poehler",
     "description": "Actress",
     "pos": 1,
     "fullname": ["Amy", "Poehler"],
-    "guess": "poller"
+    "guess": "poller",
+    "phonetic": "ˈpoʊlər;"
   },
   {
     "id": "macaulay",
     "description": "Actor",
     "pos": 0,
     "fullname": ["Macaulay", "Culkin"],
-    "guess": "mculley"
+    "guess": "mculley",
+    "phonetic": "məˈkɔːli"
   },
 
   {
@@ -63,55 +69,63 @@
     "description": "Musician",
     "pos": 1,
     "fullname": ["Alanis", "Morissette"],
-    "guess": "morrisette"
+    "guess": "morrisette",
+    "phonetic": "ˌmɒrɪˈsɛt"
   },
   {
     "id": "mclachlan",
     "description": "Musician",
     "pos": 1,
     "fullname": ["Sarah", "McLachlan"],
-    "guess": "mcglaughlin"
+    "guess": "mcglaughlin",
+    "phonetic": "məˈklɒklən"
   },
   {
     "id": "palahniuk",
     "description": "Author (Fight Club)",
     "pos": 1,
     "fullname": ["Chuck", "Palahniuk"],
-    "guess": "palaneuk"
+    "guess": "palaneuk",
+    "phonetic": "ˈpɔːlənɪk"
   },
   {
     "id": "shyamalan",
     "description": "Filmmaker",
     "pos": 1,
     "fullname": ["M. Night", "Shyamalan"],
-    "guess": "shamalaughn"
+    "guess": "shamalaughn",
+    "phonetic": "ˈʃɑːməlɑːn"
   },
   {
     "id": "mcgwire",
     "description": "Former MLB Player",
     "pos": 1,
     "fullname": ["Mark", "McGwire"],
-    "guess": "mcguire"
+    "guess": "mcguire",
+    "phonetic": ""
   },
   {
     "id": "johansson",
     "description": "Actress",
     "pos": 1,
     "fullname": ["Scarlett", "Johansson"],
-    "guess": "johanssan"
+    "guess": "johanssan",
+    "phonetic": "dʒoʊˈhænsən"
   },
   {
     "id": "minaj",
     "description": "rapper",
     "pos": 1,
     "fullname": ["Nicki", "Minaj"],
-    "guess": "minage"
+    "guess": "minage",
+    "phonetic": "mɪˈnɑːʒ"
   },
   {
     "id": "labeouf",
     "description": "Actor",
     "pos": 1,
     "fullname": ["Shia", "LaBeouf"],
-    "guess": "labeuff"
+    "guess": "labeuff",
+    "phonetic": "ˈʃaɪ.ə ləˈbʌf"
   }
 ]

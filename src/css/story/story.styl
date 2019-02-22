@@ -33,9 +33,10 @@ button
 	border-radius 4px
 	background $off-white
 	font-family $sans
+	letter-spacing 0.02em
 	&:hover
 		+mq('bp-4')
-			box-shadow 0 0 5px $correct
+			background-color lighten($correct, 15)
 
 	&.button--skip
 		border none

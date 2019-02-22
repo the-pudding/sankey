@@ -28,8 +28,7 @@ let $nav = null;
 
 let tutorialChart = null;
 let quizChart = null;
-let allCharts = [];
-const returnVisit = false;
+let allCharts = null;
 let allData = {};
 
 function resize() {}
@@ -174,6 +173,13 @@ function finishData() {
 	db.setReturner();
 }
 
+function handlePhoneticClick({ phonetic }) {
+	d3.select(this)
+		.text(phonetic)
+		.on('click', () => {})
+		.classed('is-done', true);
+}
+
 function handleAllClick(noscroll) {
 	d3.select('.quiz__below').remove();
 	db.finish();
@@ -266,6 +272,14 @@ function createQuestion(d) {
 		.append('span')
 		.attr('class', 'icon')
 		.html(SVG_VOLUME);
+
+	if (d.phonetic) {
+		$person
+			.append('button')
+			.attr('class', 'btn btn--phonetic')
+			.text('Phonetic Spelling')
+			.on('click', handlePhoneticClick);
+	}
 
 	// RESPONSE
 	const $response = $question.append('div').attr('class', 'question__response');

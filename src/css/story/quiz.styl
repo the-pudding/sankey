@@ -36,10 +36,28 @@
 			margin 0 auto
 			margin-top 1rem
 			display block
-			// font-family $mono
 			text-transform uppercase
 			padding 0.5rem
 			line-height 1
+
+		.btn--phonetic
+			background transparent
+			border none
+			border-radius 0
+			padding 0
+			margin 0 auto
+			margin-top 0.5rem
+			border-bottom 1px solid $gray
+			color $gray-dark
+			text-transform capitalize
+			set-type-size(small, true)
+	
+			&.is-done
+				border-color transparent
+				cursor default
+				&:hover
+					background-color transparent
+
 		span.is-guess
 			font-family $mono
 		svg
@@ -88,7 +106,7 @@
 			width 100%
 			+mq('bp-4')
 				margin-top 0
-				width 10rem
+				width 10.5rem
 				margin-left 0.5rem
 			&.is-next
 				background-color $gray-light
@@ -128,13 +146,12 @@
 			color $gray-dark
 			set-type-size(small, false)
 			
-			+mq('bp-4')
-				set-type-size(root, false)
+			// +mq('bp-4')
+			// 	set-type-size(root, false)
 
 			&:hover
 				background-color lighten($correct, 15)
 				box-shadow none
-
 
 	.question__message
 		text-align center
