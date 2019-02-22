@@ -120,7 +120,7 @@ function update({ key, value }) {
 		);
 	const { id, guess } = userData;
 	const submissions = getSubmissions(guess);
-	// TODO
+
 	if (Object.keys(submissions).length && connected) {
 		firebaseDB
 			.ref(id)
