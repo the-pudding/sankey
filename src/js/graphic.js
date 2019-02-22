@@ -469,7 +469,7 @@ function init() {
 	)
 		.then(response => {
 			cleanAllData(response.data.names);
-
+			if (response && response.updated) console.log(response.updated);
 			d3.select('.btn--skip')
 				.node()
 				.addEventListener('click', handleSkipClick);
