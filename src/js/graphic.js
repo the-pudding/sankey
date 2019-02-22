@@ -32,7 +32,11 @@ let quizChart = null;
 let allCharts = null;
 let allData = {};
 
-function resize() {}
+function resize() {
+	if (tutorialChart) tutorialChart.resize().render();
+	if (quizChart) quizChart.resize().render();
+	if (allCharts) allCharts.forEach(c => c.resize().render());
+}
 
 function cleanInput({ val, start }) {
 	const clean = val.replace(/[^a-z]/g, '');
@@ -449,7 +453,7 @@ function cleanAllData(data) {
 			countScaled: scaleCount(d.count),
 			name: ` ${d.name}`
 		}));
-		d3.shuffle(allData[i]);
+		if (i !== 'britney') d3.shuffle(allData[i]);
 	}
 }
 
