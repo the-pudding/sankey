@@ -1,3 +1,4 @@
+import lev from 'js-levenshtein';
 import firebase from '@firebase/app';
 import '@firebase/database';
 import generateID from './generate-id';
@@ -105,6 +106,11 @@ function getSubmissions(data) {
 		const hasSwear = SWEAR.find(s => g.includes(s));
 		if (hasSwear) return false;
 
+		const maxDist = Math.floor(d.length * 0.5);
+		const dist = lev(d, g);
+		const mostlyWrong = dist > maxDist;
+		if (mostlyWrong) return false;
+
 		// add to submit list
 		output[d] = g;
 	});
@@ -126,7 +132,7 @@ function update({ key, value }) {
 			.ref(id)
 			.set({ guess: submissions })
 			.then(() => {
-				console.log('saved');
+				// console.log('saved');
 			})
 			.catch(console.log);
 	}

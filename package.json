@@ -12,6 +12,7 @@
     "@firebase/database": "0.3.11",
     "d3-svg-annotation": "2.3.1",
     "fontfaceobserver": "^2.1.0",
+    "js-levenshtein": "1.1.6",
     "lodash.debounce": "^4.0.8",
     "nouislider": "^12.1.0",
     "promise-polyfill": "^8.1.0",
