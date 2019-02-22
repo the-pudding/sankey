@@ -189,7 +189,8 @@ d3.selection.prototype.puddingChartSankey = function init() {
 				// const offN = d3.select('.question__nav').node().offsetHeight;
 				// const offR = d3.select('.question__response').node().offsetHeight;
 
-				const h = Math.min(Math.max(window.innerHeight - OFF_H, 420), 640);
+				// const h = Math.min(Math.max(window.innerHeight - OFF_H, 420), 540);
+				const h = 480;
 
 				linkWidth = Math.floor((w - margin.right - margin.right) / MAX_CHARS);
 

@@ -5,6 +5,7 @@ import generateSankeyData from './generate-sankey-data';
 import britneyData from './britney';
 import PEOPLE from './people';
 
+PEOPLE.sort((a, b) => d3.ascending(a.id, b.id));
 // TODO remove slice
 const PEOPLE_QUEUE = PEOPLE.map(d => ({ ...d })).filter(
 	d => d.id !== 'britney'
@@ -191,7 +192,7 @@ function handleAllClick(noscroll) {
 	$all.classed('is-visible', true);
 
 	allCharts = PEOPLE.filter(d => d.id !== 'britney').map(person => {
-		const { id, fullname } = person;
+		const { id, fullname, description } = person;
 
 		const total = d3.sum(allData[id], d => d.count);
 
@@ -203,7 +204,15 @@ function handleAllClick(noscroll) {
 		});
 
 		const $person = $allContent.append('div').attr('class', 'person');
-		$person.append('p').text(fullname.join(' '));
+		$person
+			.append('p')
+			.attr('class', 'person__name')
+			.text(fullname.join(' '));
+
+		$person
+			.append('p')
+			.attr('class', 'person__description')
+			.text(description);
 
 		const $figure = $person.append('figure');
 
@@ -440,6 +449,7 @@ function cleanAllData(data) {
 			countScaled: scaleCount(d.count),
 			name: ` ${d.name}`
 		}));
+		d3.shuffle(allData[i]);
 	}
 }
 
