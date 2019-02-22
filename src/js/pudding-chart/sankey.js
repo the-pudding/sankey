@@ -141,7 +141,7 @@ d3.selection.prototype.puddingChartSankey = function init() {
 						// title: d.year,
 						label: `${percent} of people type "n" at this point`,
 						padding: 6,
-						wrap: width < 600 ? 80 : 120
+						wrap: width < 480 ? 80 : 120
 						// bgPadding: { top: 8, left: 8, right: 8, bottom: 8 }
 					},
 					data: { x, y },
@@ -256,7 +256,9 @@ d3.selection.prototype.puddingChartSankey = function init() {
 					$el
 						.append('rect')
 						.attr('width', d =>
-							shouldTutorial && d.data.key === ' bri' ? w * 2.5 : w
+							shouldTutorial && width > 480 && d.data.key === ' bri'
+								? w * 2.5
+								: w
 						);
 					return $el;
 				};
