@@ -410,10 +410,18 @@ d3.selection.prototype.puddingChartSankey = function init() {
 				}
 
 				const labelData = stackData.filter(d => {
-					if (shouldReveal)
+					if (shouldReveal) {
+						// check if is correct and children are correct OR no child
+						const noChild = !d.child.children;
+						const correctContinues = !noChild
+							? d.child.children.find(v => v.data.correct)
+							: false;
 						return (
-							!d.child.children && (d.child.data.guess || d.child.data.correct)
+							(noChild || (d.child.data.correct && !correctContinues)) &&
+							(d.child.data.guess || d.child.data.correct)
 						);
+					}
+
 					if (!shouldTutorial)
 						return d.child.data.guess && d.child.depth === guessDepth + 1;
 					return false;
@@ -439,8 +447,8 @@ d3.selection.prototype.puddingChartSankey = function init() {
 
 						const y = tR + midPosChild;
 						const x = d.child.y0 * nameWidth + DEFAULT_WIDTH * 4;
-
-						return `translate(${x}, ${y})`;
+						const xOff = shouldReveal && d.child.children ? linkWidth : 0;
+						return `translate(${x + xOff}, ${y})`;
 					})
 					.classed('is-guess', d => d.child.data.guess)
 					.classed('is-correct', d => d.child.data.correct);

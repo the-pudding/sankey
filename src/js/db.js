@@ -127,13 +127,13 @@ function update({ key, value }) {
 	const submissions = getSubmissions(guess);
 
 	if (Object.keys(submissions).length && connected) {
-		firebaseDB
-			.ref(id)
-			.set({ guess: submissions })
-			.then(() => {
-				// console.log('saved');
-			})
-			.catch(console.log);
+		// firebaseDB
+		// 	.ref(id)
+		// 	.set({ guess: submissions })
+		// 	.then(() => {
+		// 		// console.log('saved');
+		// 	})
+		// 	.catch(console.log);
 	}
 }
 
