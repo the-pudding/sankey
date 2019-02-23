@@ -493,8 +493,8 @@ function init() {
 			if (db.getReturner()) handleAllClick(true);
 			else nextQuestion();
 
-			d3.select('.quiz__below button').on('click', handleAllClick);
-			d3.select('.quiz__below button').on('click', handleNewClick);
+			d3.select('.quiz__below .btn--all').on('click', handleAllClick);
+			d3.select('.quiz__below .btn--new').on('click', handleNewClick);
 		})
 		.catch(console.error);
 }
