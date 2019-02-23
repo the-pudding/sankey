@@ -119,7 +119,8 @@ d3.selection.prototype.puddingChartSankey = function init() {
 				}
 			);
 
-			const percent = d3.format('.0%')(datum.child.data.percent);
+			// const percent = d3.format('.0%')(datum.child.data.percent);
+			// console.log(datum.child.data);
 			const x = datum.node.y0 * nameWidth;
 			// const y = datum.child.x0 * height;
 
@@ -139,7 +140,7 @@ d3.selection.prototype.puddingChartSankey = function init() {
 				{
 					note: {
 						// title: d.year,
-						label: `${percent} of people type "n" at this point`,
+						label: '1% of people type "n" at this point',
 						padding: 6,
 						wrap: width < 480 ? 80 : 120
 						// bgPadding: { top: 8, left: 8, right: 8, bottom: 8 }

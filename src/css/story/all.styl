@@ -6,12 +6,18 @@
 		display flex
 		flex-wrap wrap
 		justify-content center
+		align-items center
 		margin-top 2rem
+		flex-direction column
+		+mq('bp-6')
+			flex-direction row
 	.person
-		width 50%
+		width 100%
 		max-width 40rem
 		min-width 18rem
 		margin-bottom 3rem
+		+mq('bp-6')
+			width 50%
 		p
 			margin 0
 			text-align center

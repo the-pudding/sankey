@@ -5,6 +5,8 @@ import generateSankeyData from './generate-sankey-data';
 import britneyData from './britney';
 import PEOPLE from './people';
 
+const RANGE = [1, 10];
+
 PEOPLE.sort((a, b) => d3.ascending(a.id, b.id));
 // TODO remove slice
 const PEOPLE_QUEUE = PEOPLE.map(d => ({ ...d })).filter(
@@ -45,10 +47,10 @@ function cleanInput({ val, start }) {
 
 function handleFocus() {
 	const { top } = $quiz
-		.select('.question__response')
+		.select('.question__person button')
 		.node()
 		.getBoundingClientRect();
-	const y = window.scrollY + top;
+	const y = window.scrollY + top - 16;
 	window.scrollTo(0, y);
 }
 
@@ -68,9 +70,9 @@ function handleInputChange() {
 
 	const max = d3.max(versionsClone, p => p.count);
 	const scaleCount = d3
-		.scaleSqrt()
+		.scaleLinear()
 		.domain([1, max])
-		.range([2, 10]);
+		.range(RANGE);
 
 	versionsClone.forEach(v => (v.countScaled = scaleCount(v.count)));
 
@@ -167,9 +169,9 @@ function finishData() {
 
 			const max = d3.max(allData[id], p => p.count);
 			const scaleCount = d3
-				.scaleSqrt()
+				.scaleLinear()
 				.domain([1, max])
-				.range([2, 10]);
+				.range(RANGE);
 
 			allData[id].forEach(v => (v.countScaled = scaleCount(v.count)));
 		}
@@ -304,6 +306,8 @@ function createQuestion(d) {
 			.attr('class', 'btn btn--new')
 			.text('Show Me Another')
 			.on('click', handleNewClick);
+	} else {
+		d3.select('.quiz__below .btn--new').remove();
 	}
 
 	$nav
@@ -312,7 +316,7 @@ function createQuestion(d) {
 		.text('Skip To Results')
 		.on('click', d => handleAllClick());
 
-	$nav.append('p').text(`${PEOPLE_QUEUE.length - 1} remaining`);
+	$nav.append('p').text(`${PEOPLE_QUEUE.length - 1} names remaining`);
 
 	$question.append('p').attr('class', 'question__message');
 
@@ -350,9 +354,9 @@ function showQuestion(id) {
 
 	const max = d3.max(datum.versions, p => p.count);
 	const scaleCount = d3
-		.scaleSqrt()
+		.scaleLinear()
 		.domain([1, max])
-		.range([2, 10]);
+		.range(RANGE);
 	datum.versions.forEach(v => (v.countScaled = scaleCount(v.count)));
 
 	const $question = createQuestion(datum);
@@ -441,14 +445,16 @@ function cleanAllData(data) {
 	allData = data;
 	allData.britney = TUTORIAL_DATA;
 	for (const i in allData) {
-		// const scaleCount = d3.scaleLog().domain([1, britneyData[0].count]);
 		const person = allData[i];
+		// sort + slice
+		person.sort((a, b) => d3.descending(a.count, b.count));
+
 		const max = d3.max(person, p => p.count);
 		const scaleCount = d3
-			.scaleSqrt()
+			.scaleLinear()
 			.domain([1, max])
-			.range([2, 10]);
-		allData[i] = person.map(d => ({
+			.range(RANGE);
+		allData[i] = person.slice(0, 8).map(d => ({
 			...d,
 			countScaled: scaleCount(d.count),
 			name: ` ${d.name}`
@@ -488,6 +494,7 @@ function init() {
 			else nextQuestion();
 
 			d3.select('.quiz__below button').on('click', handleAllClick);
+			d3.select('.quiz__below button').on('click', handleNewClick);
 		})
 		.catch(console.error);
 }
