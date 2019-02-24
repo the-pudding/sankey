@@ -56,9 +56,9 @@ d3.selection.prototype.puddingChartSankey = function init() {
 		}
 
 		function formatNumber(x) {
-			return d3
-				.format('.3s')(x)
-				.replace(/\.0*/g, '');
+			// const sig = x >= 100000 || x < 1000 ? 3 : 2
+			const sig = 3;
+			return d3.format(`.${sig}s`)(x);
 		}
 
 		function customPoints(pts) {
