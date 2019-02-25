@@ -13,7 +13,7 @@ d3.selection.prototype.puddingChartSankey = function init() {
 			top: MIN_FONT_SIZE,
 			bottom: MIN_FONT_SIZE,
 			left: 0,
-			right: MIN_FONT_SIZE * 2.5
+			right: MIN_FONT_SIZE * 1.5
 		};
 		const scaleFont = d3.scaleLinear();
 		const scaleColorPurple = d3.scaleLinear().range([C.purple, C.purpleLight]);

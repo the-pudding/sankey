@@ -316,7 +316,7 @@ function createQuestion(d) {
 		.text('Skip To Results')
 		.on('click', d => handleAllClick());
 
-	$nav.append('p').text(`${PEOPLE_QUEUE.length - 1} names remaining`);
+	$nav.append('p').text(`${PEOPLE_QUEUE.length - 1} names left`);
 
 	$question.append('p').attr('class', 'question__message');
 
