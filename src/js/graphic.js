@@ -32,7 +32,8 @@ let $nav = null;
 let tutorialChart = null;
 let quizChart = null;
 let allCharts = null;
-let allData = {};
+let rawData = {};
+const allData = {};
 
 function resize() {
 	if (tutorialChart) tutorialChart.resize().render();
@@ -96,7 +97,7 @@ function handleInputChange() {
 	const percent = d3.format('.0%')(count / total);
 	const msg = `${
 		correct ? 'Correct' : 'Wrong'
-	}. <span>${percent}</span> of people get it right.`;
+	}. <span>${percent}</span> of readers got it right.`;
 	$quiz
 		.select('.question__message')
 		.classed('is-correct', guess === id)
@@ -442,19 +443,19 @@ function showTutorial(id) {
 }
 
 function cleanAllData(data) {
-	allData = data;
-	allData.britney = TUTORIAL_DATA;
-	for (const i in allData) {
-		const person = allData[i];
+	rawData = data;
+	rawData.britney = TUTORIAL_DATA;
+	for (const i in rawData) {
 		// sort + slice
-		person.sort((a, b) => d3.descending(a.count, b.count));
+		const dupe = rawData[i].map(d => ({ ...d }));
+		dupe.sort((a, b) => d3.descending(a.count, b.count));
 
-		const max = d3.max(person, p => p.count);
+		const max = d3.max(dupe, p => p.count);
 		const scaleCount = d3
 			.scaleLinear()
 			.domain([1, max])
 			.range(RANGE);
-		allData[i] = person.slice(0, 8).map(d => ({
+		allData[i] = dupe.slice(0, 8).map(d => ({
 			...d,
 			countScaled: scaleCount(d.count),
 			name: ` ${d.name}`
@@ -471,6 +472,53 @@ function nextQuestion() {
 	else nextQuestion();
 }
 
+function createTable({ id, data }) {
+	const w = d3.select('#list').node().offsetWidth;
+	const test = '10,000'.length;
+	const max = 'galifianakis'.length + 3 + test;
+	const clean = data.map(d => ({
+		...d,
+		count: d3.format(',')(d.count)
+	}));
+
+	// const max = d3.max(data, d => d.name.length);
+	const $t = d3
+		.select('#list')
+		.append('div')
+		.attr('class', 'table');
+
+	const { fullname, description } = PEOPLE.find(d => d.id === id);
+	const $hed = $t.append('h3');
+	$hed
+		.append('span')
+		.attr('class', 'name')
+		.text(fullname.join(' '));
+
+	const total = d3.format(',')(d3.sum(data, d => d.count));
+	$hed
+		.append('span')
+		.attr('class', 'description')
+		.text(`${description} [${total} responses]`);
+
+	const $figure = $t.append('figure');
+
+	$figure
+		.selectAll('p')
+		.data(clean)
+		.join('p')
+		.html(d => {
+			const gap = max - (d.name.length + d.count.length);
+			const dots = d3
+				.range(gap)
+				.map(() => '.')
+				.join('');
+			return `<span>${d.name}</span><span>${dots}</span><span>${
+				d.count
+			}</span>`;
+		});
+	// .style('width', `${max * 24}px`);
+}
+
 function init() {
 	db.setup();
 
@@ -478,6 +526,7 @@ function init() {
 		`https://pudding.cool/2019/02/sankey-data/data.json?version=${Date.now()}`
 	)
 		.then(response => {
+			d3.select('#all .prose span').text(d3.format(',')(response.data.total));
 			cleanAllData(response.data.names);
 			if (response && response.updated) console.log(response.updated);
 			d3.select('.btn--skip')
@@ -495,6 +544,19 @@ function init() {
 
 			d3.select('.quiz__below .btn--all').on('click', handleAllClick);
 			d3.select('.quiz__below .btn--new').on('click', handleNewClick);
+
+			const toSort = [];
+			for (const i in rawData) {
+				if (i !== 'britney') toSort.push({ id: i, data: rawData[i] });
+			}
+
+			toSort.sort((a, b) =>
+				d3.descending(
+					d3.sum(a.data, v => v.count),
+					d3.sum(b.data, v => v.count)
+				)
+			);
+			toSort.forEach(createTable);
 		})
 		.catch(console.error);
 }

@@ -57,8 +57,8 @@ d3.selection.prototype.puddingChartSankey = function init() {
 
 		function formatNumber(x) {
 			// const sig = x >= 100000 || x < 1000 ? 3 : 2
-			if (x < 100) return x;
-			const sig = 3;
+			if (x < 1000) return x;
+			const sig = x < 10000 ? 2 : 3;
 			return d3.format(`.${sig}s`)(x);
 		}
 

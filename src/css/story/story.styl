@@ -74,3 +74,55 @@ button
 
 #tease
 	margin-bottom 3rem
+
+.table
+	margin-top 3rem
+	h3
+		font-family 'Roboto Mono'
+		// text-transform uppercase
+		set-type-size(x-large, false)
+		line-height 1
+		margin-bottom 1rem
+		// letter-spacing 0.1em
+		color $wrong-dark
+	.name
+		font-weight 700
+	.description
+		color $gray
+		margin-left 0.5em
+		set-type-size(large, false)
+
+	figure
+		// display flex
+		// align-items flex-end
+		// flex-direction column
+		// flex-wrap wrap
+		width 100%
+		// column-gap 5rem
+		column-count 2
+		+mq('bp-6')
+			column-count 3
+			column-width 300px
+		+mq('bp-x')
+			column-count 4
+		p
+			margin 0
+			font-family 'Roboto Mono'
+			text-transform capitalize
+			letter-spacing 0.05em
+			set-type-size(large, false)
+			font-weight 700
+			line-height 1.4
+			color $fg
+			&:nth-child(odd)
+				// background-color $off-white
+
+		span:nth-child(2)
+			color $gray-light
+			font-weight 400
+		span:last-child
+			font-weight 400
+			color $gray
+			// font-size 16px
+			// transform translateY(-1px)
+			margin-left 0.25em
