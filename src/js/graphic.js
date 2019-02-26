@@ -519,6 +519,21 @@ function createTable({ id, data }) {
 	// .style('width', `${max * 24}px`);
 }
 
+function setupList() {
+	const toSort = [];
+	for (const i in rawData) {
+		if (i !== 'britney') toSort.push({ id: i, data: rawData[i] });
+	}
+
+	toSort.sort((a, b) =>
+		d3.descending(
+			d3.sum(a.data, v => v.count),
+			d3.sum(b.data, v => v.count)
+		)
+	);
+	toSort.forEach(createTable);
+}
+
 function init() {
 	db.setup();
 
@@ -545,18 +560,7 @@ function init() {
 			d3.select('.quiz__below .btn--all').on('click', handleAllClick);
 			d3.select('.quiz__below .btn--new').on('click', handleNewClick);
 
-			const toSort = [];
-			for (const i in rawData) {
-				if (i !== 'britney') toSort.push({ id: i, data: rawData[i] });
-			}
-
-			toSort.sort((a, b) =>
-				d3.descending(
-					d3.sum(a.data, v => v.count),
-					d3.sum(b.data, v => v.count)
-				)
-			);
-			toSort.forEach(createTable);
+			// setupList();
 		})
 		.catch(console.error);
 }
