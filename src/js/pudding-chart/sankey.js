@@ -402,7 +402,8 @@ d3.selection.prototype.puddingChartSankey = function init() {
 					})
 					.attr('x', linkWidth / 2)
 					.text(d => formatNumber(d.child.data.count))
-					.classed('is-visible', d => d.child.data.percent >= 0.2);
+					.classed('is-visible', d => d.child.data.percent >= 0.2)
+					.style('font-size', width < 480 ? '11px' : '13px');
 
 				function enterLabel(sel) {
 					const $el = sel.append('g').attr('class', 'label');
@@ -474,7 +475,8 @@ d3.selection.prototype.puddingChartSankey = function init() {
 						const c = formatNumber(d.child.data.count);
 						const t = formatNumber(stackData[0].node.data.count);
 						return `${c} of ${t}`;
-					});
+					})
+					.style('font-size', width < 480 ? '11px' : '13px');
 
 				$annotations.select('.annotation').remove();
 				if (shouldTutorial && guessDepth >= 3)
