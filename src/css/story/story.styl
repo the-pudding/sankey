@@ -75,8 +75,26 @@ button
 #tease
 	margin-bottom 3rem
 
-.table
-	margin-top 3rem
+.info
+	font-family 'Roboto Mono'
+	h1
+		line-height 1.25
+		margin-bottom 1rem
+	p
+		margin 0
+		&:last-of-type
+			font-style italic
+	span
+		color lighten($correct-dark, 20)
+		font-weight 700
+		
+		
+
+#list
+	display none
+	.table
+		margin-top 3rem
+
 	h3
 		font-family 'Roboto Mono'
 		// text-transform uppercase
@@ -99,10 +117,10 @@ button
 		// flex-wrap wrap
 		width 100%
 		// column-gap 5rem
-		column-count 2
+		column-count 4
 		+mq('bp-6')
-			column-count 3
-			column-width 300px
+			column-count 4
+			// column-width 300px
 		+mq('bp-x')
 			column-count 4
 		p
@@ -110,7 +128,7 @@ button
 			font-family 'Roboto Mono'
 			text-transform capitalize
 			letter-spacing 0.05em
-			set-type-size(large, false)
+			font-size 16px
 			font-weight 700
 			line-height 1.4
 			color $fg
@@ -126,3 +144,6 @@ button
 			// font-size 16px
 			// transform translateY(-1px)
 			margin-left 0.25em
+		
+		.correct
+			color lighten($correct-dark, 20)

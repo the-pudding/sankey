@@ -476,7 +476,7 @@ function createTable({ id, data }) {
 	const w = d3.select('#list').node().offsetWidth;
 	const test = '10,000'.length;
 	const max = 'galifianakis'.length + 3 + test;
-	const clean = data.map(d => ({
+	const clean = data.slice(0, 64).map(d => ({
 		...d,
 		count: d3.format(',')(d.count)
 	}));
@@ -512,9 +512,10 @@ function createTable({ id, data }) {
 				.range(gap)
 				.map(() => '.')
 				.join('');
-			return `<span>${d.name}</span><span>${dots}</span><span>${
-				d.count
-			}</span>`;
+			const correct = d.name === id ? 'correct' : '';
+			return `<span class="${correct}">${
+				d.name
+			}</span><span>${dots}</span><span>${d.count}</span>`;
 		});
 	// .style('width', `${max * 24}px`);
 }
@@ -526,10 +527,7 @@ function setupList() {
 	}
 
 	toSort.sort((a, b) =>
-		d3.descending(
-			d3.sum(a.data, v => v.count),
-			d3.sum(b.data, v => v.count)
-		)
+		d3.descending(d3.sum(a.data, v => v.count), d3.sum(b.data, v => v.count))
 	);
 	toSort.forEach(createTable);
 }
@@ -538,10 +536,11 @@ function init() {
 	db.setup();
 
 	d3.json(
-		`https://pudding.cool/2019/02/sankey-data/data.json?version=${Date.now()}`
+		`https://pudding.cool/2019/02/sankey-data/data-all.json?version=${Date.now()}`
 	)
 		.then(response => {
 			d3.select('#all .prose span').text(d3.format(',')(response.data.total));
+			d3.select('#list h1 span').text(d3.format(',')(response.data.total));
 			cleanAllData(response.data.names);
 			if (response && response.updated) console.log(response.updated);
 			d3.select('.btn--skip')
