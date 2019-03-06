@@ -6,7 +6,6 @@ d3.selection.prototype.puddingChartSankey = function init() {
 	function createChart(el) {
 		const DEFAULT_WIDTH = 2;
 		const MIN_FONT_SIZE = 16;
-		const OFF_H = 144;
 		const MAX_CHARS = 'galifianakis'.length + 2;
 
 		const margin = {
@@ -192,7 +191,8 @@ d3.selection.prototype.puddingChartSankey = function init() {
 				// const offR = d3.select('.question__response').node().offsetHeight;
 
 				// const h = Math.min(Math.max(window.innerHeight - OFF_H, 420), 540);
-				const h = 420;
+				// const h = 420;
+				const h = 40 * 100;
 
 				linkWidth = Math.floor((w - margin.right - margin.right) / MAX_CHARS);
 
@@ -402,7 +402,7 @@ d3.selection.prototype.puddingChartSankey = function init() {
 					})
 					.attr('x', linkWidth / 2)
 					.text(d => formatNumber(d.child.data.count))
-					.classed('is-visible', d => d.child.data.percent >= 0.2)
+					.classed('is-visible', d => d.child.data.percent >= 0.01)
 					.style('font-size', width < 480 ? '11px' : '13px');
 
 				function enterLabel(sel) {

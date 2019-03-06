@@ -5,7 +5,7 @@ import generateSankeyData from './generate-sankey-data';
 import britneyData from './britney';
 import PEOPLE from './people';
 
-const RANGE = [1, 10];
+const RANGE = [1, 20];
 
 PEOPLE.sort((a, b) => d3.ascending(a.id, b.id));
 // TODO remove slice
@@ -532,12 +532,54 @@ function setupList() {
 	toSort.forEach(createTable);
 }
 
+function setupTree() {
+	const id = 'mcconaughey';
+	// console.table(rawData[id])
+	console.log(d3.sum(rawData[id], d => d.count));
+	const data = rawData[id].slice(0, 100);
+	console.table(rawData[id].filter(d => d.count >= 5));
+	// console.log(data.length);
+
+	const total = d3.sum(data, d => d.count);
+
+	const max = d3.max(data, d => d.count);
+
+	const scaleCount = d3
+		.scaleLinear()
+		.domain([1, max])
+		.range(RANGE);
+
+	const clean = data.map(d => ({
+		...d,
+		countScaled: scaleCount(d.count),
+		name: ` ${d.name}`
+	}));
+
+	const sankeyData = generateSankeyData({
+		data: clean,
+		correct: id,
+		total,
+		guess: ''
+	});
+
+	const $figure = d3.select('#tree').append('figure');
+
+	$figure
+		.datum(sankeyData)
+		.puddingChartSankey()
+		.correct(id)
+		.resize()
+		.reveal(true)
+		.render(true);
+}
+
 function init() {
 	db.setup();
 
-	d3.json(
-		`https://pudding.cool/2019/02/sankey-data/data-all.json?version=${Date.now()}`
-	)
+	// const d = 'data'
+	const d = 'data-all';
+	const v = Date.now();
+	d3.json(`https://pudding.cool/2019/02/sankey-data/${d}.json?version=${v}`)
 		.then(response => {
 			d3.select('#all .prose span').text(d3.format(',')(response.data.total));
 			d3.select('#list h1 span').text(d3.format(',')(response.data.total));
@@ -552,14 +594,15 @@ function init() {
 				.append('span')
 				.html(SVG_VOLUME);
 
-			showTutorial('britney');
-			if (db.getReturner()) handleAllClick(true);
-			else nextQuestion();
+			// showTutorial('britney');
+			// if (db.getReturner()) handleAllClick(true);
+			// else nextQuestion();
 
 			d3.select('.quiz__below .btn--all').on('click', handleAllClick);
 			d3.select('.quiz__below .btn--new').on('click', handleNewClick);
 
 			// setupList();
+			setupTree();
 		})
 		.catch(console.error);
 }
