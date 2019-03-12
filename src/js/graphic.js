@@ -536,7 +536,7 @@ function init() {
 	db.setup();
 
 	d3.json(
-		`https://pudding.cool/2019/02/sankey-data/data-all.json?version=${Date.now()}`
+		`https://pudding.cool/2019/02/sankey-data/data.json?version=${Date.now()}`
 	)
 		.then(response => {
 			d3.select('#all .prose span').text(d3.format(',')(response.data.total));

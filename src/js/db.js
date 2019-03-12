@@ -1,16 +1,16 @@
-import lev from 'js-levenshtein';
-import firebase from '@firebase/app';
-import '@firebase/database';
+// import lev from 'js-levenshtein';
+// import firebase from '@firebase/app';
+// import '@firebase/database';
 import generateID from './generate-id';
-import checkStorage from './check-storage';
-import SWEAR from './swear';
+// import checkStorage from './check-storage';
+// import SWEAR from './swear';
 
 let firebaseApp = null;
 let firebaseDB = null;
 let userData = {};
 let connected = false;
 
-const hasStorage = checkStorage('localStorage');
+// const hasStorage = checkStorage('localStorage');
 
 function getGuess(id) {
 	if (userData.guess) return userData.guess[id];
@@ -27,29 +27,29 @@ function getReturner() {
 
 function setReturner() {
 	userData.returner = 'true';
-	if (hasStorage)
-		window.localStorage.setItem('pudding_sankey_returner', 'true');
+	// if (hasStorage)
+	// 	window.localStorage.setItem('pudding_sankey_returner', 'true');
 }
 
 function setupUserData() {
-	if (hasStorage) {
-		let id = window.localStorage.getItem('pudding_sankey_id');
-		if (!id) {
-			id = generateID();
-			window.localStorage.setItem('pudding_sankey_id', id);
-		}
+	// if (hasStorage) {
+	// 	let id = window.localStorage.getItem('pudding_sankey_id');
+	// 	if (!id) {
+	// 		id = generateID();
+	// 		window.localStorage.setItem('pudding_sankey_id', id);
+	// 	}
 
-		let guess = window.localStorage.getItem('pudding_sankey_guess');
-		guess = guess ? JSON.parse(guess) : {};
+	// 	let guess = window.localStorage.getItem('pudding_sankey_guess');
+	// 	guess = guess ? JSON.parse(guess) : {};
 
-		const results = window.localStorage.getItem('pudding_sankey_results');
-		const returner = window.localStorage.getItem('pudding_sankey_returner');
+	// 	const results = window.localStorage.getItem('pudding_sankey_results');
+	// 	const returner = window.localStorage.getItem('pudding_sankey_returner');
 
-		return { id, guess, results, returner };
-	}
+	// 	return { id, guess, results, returner };
+	// }
 
 	const newID = generateID();
-	window.localStorage.setItem('pudding_sankey_id', newID);
+	// window.localStorage.setItem('pudding_sankey_id', newID);
 	return { id: newID, guess: {}, results: false, returner: false };
 }
 
@@ -74,10 +74,9 @@ function clear() {
 }
 
 function setup() {
-	if (window.location.host.includes('localhost')) clear();
+	// if (window.location.host.includes('localhost')) clear();
 	userData = setupUserData();
-	if (!userData.results) connect();
-	// console.log({ userData });
+	// if (!userData.results) connect();
 }
 
 function closeConnection() {
@@ -89,7 +88,7 @@ function closeConnection() {
 
 function finish() {
 	userData.results = 'true';
-	if (hasStorage) window.localStorage.setItem('pudding_sankey_results', 'true');
+	// if (hasStorage) window.localStorage.setItem('pudding_sankey_results', 'true');
 
 	closeConnection();
 }
@@ -118,23 +117,23 @@ function getSubmissions(data) {
 
 function update({ key, value }) {
 	userData.guess[key] = value;
-	if (hasStorage)
-		window.localStorage.setItem(
-			'pudding_sankey_guess',
-			JSON.stringify(userData.guess)
-		);
-	const { id, guess } = userData;
-	const submissions = getSubmissions(guess);
+	// if (hasStorage)
+	// 	window.localStorage.setItem(
+	// 		'pudding_sankey_guess',
+	// 		JSON.stringify(userData.guess)
+	// 	);
+	// const { id, guess } = userData;
+	// const submissions = getSubmissions(guess);
 
-	if (Object.keys(submissions).length && connected) {
-		firebaseDB
-			.ref(id)
-			.set({ guess: submissions })
-			.then(() => {
-				// console.log('saved');
-			})
-			.catch(console.log);
-	}
+	// if (Object.keys(submissions).length && connected) {
+	// 	firebaseDB
+	// 		.ref(id)
+	// 		.set({ guess: submissions })
+	// 		.then(() => {
+	// 			// console.log('saved');
+	// 		})
+	// 		.catch(console.log);
+	// }
 }
 
 export default {
